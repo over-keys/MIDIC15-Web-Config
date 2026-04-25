@@ -872,6 +872,418 @@
     font-size:clamp(.72rem, 1.45vh, .78rem);
   }
 
+
+  /* Place the knob on the left and Read/Write vertically on the right.
+     Keep Channel / Mode / Number as one full-width row below. */
+  .knob-card{
+    padding:clamp(4px, .85vh, 7px);
+    display:grid;
+    grid-template-columns:minmax(34px, .42fr) minmax(0, 1fr);
+    grid-template-rows:minmax(0, 1fr) auto;
+    column-gap:clamp(5px, .9vh, 8px);
+    row-gap:clamp(3px, .55vh, 5px);
+    align-items:center;
+  }
+
+  .knob-face{
+    position:relative;
+    left:auto;
+    top:auto;
+    grid-column:1;
+    grid-row:1;
+    justify-self:center;
+    align-self:center;
+    transform:none;
+    width:clamp(32px, 6.2vh, 44px);
+    height:clamp(32px, 6.2vh, 44px);
+  }
+
+  .knob-actions{
+    grid-column:2;
+    grid-row:1;
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-rows:1fr 1fr;
+    gap:clamp(3px, .6vh, 5px);
+    align-self:stretch;
+    min-width:0;
+  }
+
+  .knob-actions button{
+    width:100%;
+    min-height:0;
+    height:auto;
+    padding:2px 6px;
+  }
+
+  .knob-fields{
+    grid-column:1 / -1;
+    grid-row:2;
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.18fr);
+    gap:clamp(3px, .65vh, 5px);
+    width:100%;
+    align-self:end;
+  }
+
+  @media (max-width: 620px){
+    .knob-fields{
+      grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.18fr);
+    }
+
+    .knob-field:nth-child(3){
+      grid-column:auto;
+    }
+  }
+
+
+  /* Make per-knob Read / Write buttons more compact while preserving their colors. */
+  .knob-actions{
+    justify-items:end;
+    align-self:center;
+  }
+
+  .knob-actions button{
+    width:auto;
+    min-width:clamp(42px, 7.2vh, 54px);
+    justify-self:end;
+    padding:2px 7px;
+  }
+
+
+  /* Place each knob's Read / Write buttons side by side, matching Read All / Write All. */
+  .knob-actions{
+    grid-column:2;
+    grid-row:1;
+    display:grid;
+    grid-template-columns:auto auto;
+    grid-template-rows:1fr;
+    justify-content:end;
+    justify-items:stretch;
+    align-self:center;
+    gap:clamp(4px, .7vh, 6px);
+  }
+
+  .knob-actions button{
+    width:auto;
+    min-width:clamp(42px, 7.2vh, 54px);
+    justify-self:auto;
+    padding:2px 7px;
+  }
+
+
+  /* Center the top row as one group: knob icon + Read / Write. */
+  .knob-card{
+    grid-template-columns:minmax(0, 1fr) auto auto minmax(0, 1fr);
+    column-gap:clamp(6px, 1vh, 9px);
+  }
+
+  .knob-face{
+    grid-column:2;
+    grid-row:1;
+    justify-self:center;
+  }
+
+  .knob-actions{
+    grid-column:3;
+    grid-row:1;
+    justify-content:start;
+    justify-self:start;
+  }
+
+  .knob-fields{
+    grid-column:1 / -1;
+    grid-row:2;
+  }
+
+
+  /* Top row: Read [knob icon] Write, centered as one balanced group. */
+  .knob-card{
+    grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);
+    column-gap:clamp(6px, 1vh, 9px);
+  }
+
+  .knob-face{
+    grid-column:2;
+    grid-row:1;
+    justify-self:center;
+    align-self:center;
+    z-index:1;
+  }
+
+  .knob-actions{
+    grid-column:1 / -1;
+    grid-row:1;
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows:1fr;
+    align-items:center;
+    justify-items:center;
+    justify-content:stretch;
+    align-self:center;
+    gap:clamp(6px, 1vh, 9px);
+    min-width:0;
+    z-index:2;
+  }
+
+  .knob-actions button:first-child{
+    grid-column:1;
+    justify-self:end;
+  }
+
+  .knob-actions button:last-child{
+    grid-column:3;
+    justify-self:start;
+  }
+
+  .knob-actions button{
+    width:auto;
+    min-width:clamp(42px, 7.2vh, 54px);
+    padding:2px 7px;
+  }
+
+  .knob-fields{
+    grid-column:1 / -1;
+    grid-row:2;
+  }
+
+
+  /* Fix the top row: Read [knob icon] Write without overlap. */
+  .knob-actions{
+    grid-column:1 / -1;
+    grid-row:1;
+    display:grid;
+    grid-template-columns:auto clamp(32px, 6.2vh, 44px) auto;
+    grid-template-rows:1fr;
+    justify-content:center;
+    justify-items:center;
+    align-items:center;
+    gap:clamp(6px, 1vh, 9px);
+    min-width:0;
+    z-index:2;
+  }
+
+  .knob-actions button:first-child{
+    grid-column:1;
+    justify-self:end;
+  }
+
+  .knob-actions button:last-child{
+    grid-column:3;
+    justify-self:start;
+  }
+
+  .knob-actions button{
+    width:auto;
+    min-width:clamp(40px, 6.8vh, 52px);
+    padding:2px 7px;
+  }
+
+  .knob-face{
+    grid-column:2;
+    grid-row:1;
+    justify-self:center;
+    align-self:center;
+    z-index:1;
+  }
+
+  /* Keep Channel / Mode / Number input widths equal. */
+  .knob-fields{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 620px){
+    .knob-fields{
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+    }
+
+    .knob-field:nth-child(3){
+      grid-column:auto;
+    }
+  }
+
+
+  /* Clean top-row layout: Read [Icon] Write evenly, with equal-width fields below. */
+  .knob-card{
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto auto;
+    row-gap:clamp(4px, .8vh, 7px);
+    padding:clamp(6px, 1vh, 9px);
+    align-items:start;
+  }
+
+  .knob-meta{
+    grid-column:1;
+    grid-row:1;
+    align-self:start;
+  }
+
+  .knob-toprow{
+    grid-column:1;
+    grid-row:2;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    justify-items:center;
+    column-gap:clamp(10px, 1.3vh, 12px);
+    min-width:0;
+  }
+
+  .knob-toprow > button:first-child{
+    justify-self:end;
+  }
+
+  .knob-toprow > button:last-child{
+    justify-self:start;
+  }
+
+  .knob-toprow > button{
+    width:auto;
+    min-width:clamp(48px, 7vh, 60px);
+    padding:2px 9px;
+    white-space:nowrap;
+  }
+
+  .knob-toprow .knob-face{
+    position:relative;
+    left:auto;
+    top:auto;
+    transform:none;
+    grid-column:2;
+    justify-self:center;
+    align-self:center;
+    width:clamp(34px, 6.4vh, 46px);
+    height:clamp(34px, 6.4vh, 46px);
+    z-index:1;
+  }
+
+  .knob-fields{
+    grid-column:1;
+    grid-row:3;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:clamp(4px, .75vh, 6px);
+    width:100%;
+  }
+
+  .knob-field:nth-child(3){
+    grid-column:auto;
+  }
+
+  .knob-field{
+    min-width:0;
+  }
+
+  .knob-field select,
+  .knob-field input{
+    width:100%;
+  }
+
+  @media (max-width: 620px){
+    .knob-fields{
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+    }
+
+    .knob-field:nth-child(3){
+      grid-column:auto;
+    }
+  }
+
+
+  /* Align Read / Icon / Write with Channel / Mode / Number, and keep the buttons compact. */
+  .knob-card{
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto minmax(0, 1fr);
+    row-gap:clamp(3px, .65vh, 5px);
+    padding:clamp(4px, .85vh, 7px);
+    align-items:stretch;
+  }
+
+  .knob-toprow{
+    grid-column:1;
+    grid-row:2;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    align-items:center;
+    justify-items:center;
+    column-gap:clamp(4px, .7vh, 6px);
+    width:100%;
+    min-width:0;
+  }
+
+  .knob-toprow > button{
+    width:auto;
+    min-width:clamp(40px, 6.2vh, 50px);
+    max-width:58px;
+    min-height:clamp(18px, 3.2vh, 24px);
+    padding:2px 6px;
+    justify-self:center;
+    white-space:nowrap;
+  }
+
+  .knob-toprow .knob-face{
+    grid-column:2;
+    justify-self:center;
+    align-self:center;
+    width:clamp(32px, 6.2vh, 44px);
+    height:clamp(32px, 6.2vh, 44px);
+  }
+
+  .knob-fields{
+    grid-column:1;
+    grid-row:3;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:clamp(4px, .75vh, 6px);
+    width:100%;
+    align-self:end;
+  }
+
+  .knob-field:nth-child(3){
+    grid-column:auto;
+  }
+
+
+  /* Smaller per-knob Read / Write buttons. */
+  .knob-toprow > button{
+    min-width:clamp(36px, 5.7vh, 46px);
+    max-width:52px;
+    min-height:clamp(17px, 3vh, 22px);
+    padding:1px 5px;
+    font-size:clamp(.68rem, 1.35vh, .74rem);
+  }
+
+  /* No focus ring in the normal state. Only active Read uses the blue focus. */
+  .knob-card.selected:not(.reading){
+    border-color:#d9dee7;
+    background:rgba(255,255,255,.84);
+    box-shadow:none;
+  }
+
+  .knob-card.selected:not(.reading):hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 18px rgba(15,23,42,.08);
+    background:rgba(255,255,255,.95);
+  }
+
+  .knob-card.reading{
+    border-color:var(--primary);
+    background:linear-gradient(180deg, #f7fbff 0%, var(--primary-soft) 100%);
+    box-shadow:0 0 0 4px rgba(37,99,235,.12), 0 10px 20px rgba(15,23,42,.10);
+  }
+
+
+  /* Slightly enlarge per-knob Read / Write buttons. */
+  .knob-toprow > button{
+    min-width:clamp(38px, 6vh, 49px);
+    max-width:55px;
+    min-height:clamp(18px, 3.1vh, 23px);
+    padding:2px 6px;
+    font-size:clamp(.70rem, 1.38vh, .76rem);
+  }
+
 </style>
 </head>
 <body>
@@ -914,7 +1326,7 @@
 
         <div class="control-section read-strip">
           <div class="command-grid">
-            <button id="readSequenceBtn" class="soft" type="button">Load All</button>
+            <button id="readSequenceBtn" class="soft" type="button">Read All</button>
             <button id="writeAllBtn" class="primary" type="button">Write All</button>
           </div>
         </div>
@@ -1251,8 +1663,7 @@
   }
 
   function updateReadStatus() {
-    el.readSequenceBtn.disabled = false;
-    el.readSequenceBtn.textContent = "Load All";
+    el.readSequenceBtn.textContent = "Read All";
     el.readSequenceBtn.classList.remove("danger");
     el.readSequenceBtn.classList.add("soft");
 
@@ -1264,15 +1675,13 @@
 
     const knob = state.knobs[state.readMode.index];
     const isSequence = state.readMode.kind === "sequence";
-    const prefix = isSequence ? `Load ${state.readMode.index + 1}/15` : `Load ${knob.label}`;
+    const prefix = isSequence ? `Read ${state.readMode.index + 1}/15` : `Read ${knob.label}`;
     setConsoleStatus(`${prefix}: turn knob`);
 
     if (isSequence) {
       el.readSequenceBtn.textContent = "Stop";
       el.readSequenceBtn.classList.remove("soft");
       el.readSequenceBtn.classList.add("danger");
-    } else {
-      el.readSequenceBtn.disabled = true;
     }
 
     syncKnobActionButtons();
@@ -1290,6 +1699,7 @@
   function stopReadMode(message) {
     state.readMode = null;
     state.readCooldownUntil = 0;
+    renderAll();
     updateReadStatus();
     if (message) {
       log(message);
@@ -1303,6 +1713,7 @@
       state.selectedIndex = index;
       state.readMode = { kind: "single", index };
       state.readCooldownUntil = 0;
+      renderAll();
       updateReadStatus();
       showToast(`Move knob ${state.knobs[index].label} slightly.`);
     } catch (error) {
@@ -1338,14 +1749,14 @@
     knob.number = decoded.number;
     state.selectedIndex = index;
 
-    log(`Load ${knob.label}: ${compactMidi(decoded)}`);
+    log(`Read ${knob.label}: ${compactMidi(decoded)}`);
 
     if (state.readMode.kind === "single") {
       state.readMode = null;
       state.readCooldownUntil = 0;
       renderAll();
       updateReadStatus();
-      showToast(`Knob ${knob.label} loaded.`);
+      showToast(`Knob ${knob.label} read.`);
       return true;
     }
 
@@ -1355,7 +1766,7 @@
       state.readCooldownUntil = 0;
       renderAll();
       updateReadStatus();
-      showToast("Load All complete for all 15 knobs.");
+      showToast("Read All complete for all 15 knobs.");
       return true;
     }
 
@@ -1364,7 +1775,7 @@
     state.readCooldownUntil = now + 900;
     renderAll();
     updateReadStatus();
-    showToast(`Knob ${knob.label} loaded. Move the next knob.`);
+    showToast(`Knob ${knob.label} read. Move the next knob.`);
     return true;
   }
 
@@ -1408,15 +1819,11 @@
       const index = Number(button.dataset.index);
       const action = button.dataset.action;
       const isActiveSingle = state.readMode && state.readMode.kind === "single" && state.readMode.index === index;
-      const readIsBlocked = Boolean(state.readMode && !isActiveSingle);
 
       if (action === "load") {
-        button.textContent = isActiveSingle ? "Stop" : "Load";
-        button.disabled = readIsBlocked;
+        button.textContent = isActiveSingle ? "Stop" : "Read";
         button.classList.toggle("danger", Boolean(isActiveSingle));
         button.classList.toggle("soft", !isActiveSingle);
-      } else if (action === "write") {
-        button.disabled = Boolean(state.readMode);
       }
     });
   }
@@ -1492,15 +1899,15 @@
 
       fields.append(channelField, typeField, numberField);
 
-      const actions = document.createElement("div");
-      actions.className = "knob-actions";
+      const topRow = document.createElement("div");
+      topRow.className = "knob-toprow";
 
       const loadButton = document.createElement("button");
       loadButton.type = "button";
       loadButton.className = "soft";
       loadButton.dataset.action = "load";
       loadButton.dataset.index = String(index);
-      loadButton.textContent = "Load";
+      loadButton.textContent = "Read";
 
       const writeButton = document.createElement("button");
       writeButton.type = "button";
@@ -1509,8 +1916,8 @@
       writeButton.dataset.index = String(index);
       writeButton.textContent = "Write";
 
-      actions.append(loadButton, writeButton);
-      card.append(meta, face, fields, actions);
+      topRow.append(loadButton, face, writeButton);
+      card.append(meta, topRow, fields);
 
       el.board.appendChild(card);
     });
@@ -1818,18 +2225,19 @@
 
       if (button.dataset.action === "load") {
         if (state.readMode && state.readMode.kind === "single" && state.readMode.index === index) {
-          stopReadMode("Load stopped.");
+          stopReadMode("Read stopped.");
         } else if (!state.readMode) {
           startReadKnob(index);
         }
       } else if (button.dataset.action === "write") {
+        if (state.readMode) return;
         writeKnobFromCard(index);
       }
     });
 
     el.readSequenceBtn.addEventListener("click", () => {
       if (state.readMode && state.readMode.kind === "sequence") {
-        stopReadMode("Load stopped.");
+        stopReadMode("Read stopped.");
       } else if (!state.readMode) {
         startReadSequence();
       }
