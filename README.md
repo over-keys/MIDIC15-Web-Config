@@ -6,9 +6,7 @@ MIDIC15 Web Config is an unofficial browser-based editor for configuring the 15 
 
 Open the published app here:
 
-```text
-https://over-keys.github.io/MIDIC15-Web-Config/
-```
+[https://over-keys.github.io/MIDIC15-Web-Config/](https://over-keys.github.io/MIDIC15-Web-Config/)
 
 Use Chrome or Microsoft Edge, because the app uses Web MIDI.
 
