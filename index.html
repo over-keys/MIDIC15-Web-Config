@@ -1,0 +1,1833 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIDIC15</title>
+<style>
+  :root{
+    --bg:#eef2f7;
+    --panel:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#dbe3ee;
+    --line-strong:#aeb9c9;
+    --primary:#2563eb;
+    --primary-soft:#eff6ff;
+    --orange:#f97316;
+    --ok:#16a34a;
+    --warn:#d97706;
+    --danger:#dc2626;
+    --shadow:0 12px 30px rgba(15,23,42,.08);
+    --radius:20px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,.95) 0, rgba(255,255,255,0) 38rem),
+      linear-gradient(135deg, #f8fafc 0%, var(--bg) 100%);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.35;
+  }
+
+  button,input,select{ font:inherit; }
+
+  button{
+    border:1px solid var(--line-strong);
+    background:#fff;
+    color:var(--text);
+    border-radius:999px;
+    padding:.52rem .76rem;
+    cursor:pointer;
+    transition:transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+    white-space:nowrap;
+  }
+  button:hover{ background:#f9fafb; border-color:#8f9bad; }
+  button:active{ transform:translateY(1px) scale(.99); }
+  button:disabled,input:disabled,select:disabled{ opacity:.52; cursor:not-allowed; }
+
+  button.primary{
+    background:var(--primary);
+    border-color:var(--primary);
+    color:#fff;
+    box-shadow:0 8px 18px rgba(37,99,235,.20);
+  }
+  button.primary:hover{ background:#1d4ed8; border-color:#1d4ed8; }
+
+  button.soft{
+    background:var(--primary-soft);
+    border-color:#bfdbfe;
+    color:#1d4ed8;
+  }
+
+  button.danger{
+    background:#fff7f7;
+    border-color:#fecaca;
+    color:#b91c1c;
+  }
+
+  button.ghost{
+    background:transparent;
+    border-color:transparent;
+    color:var(--muted);
+    padding:.32rem .48rem;
+  }
+
+  input,select{
+    width:100%;
+    min-width:0;
+    border:1px solid var(--line-strong);
+    border-radius:12px;
+    padding:.48rem .56rem;
+    background:#fff;
+    color:var(--text);
+  }
+
+  input[type="checkbox"]{ width:auto; transform:translateY(1px); }
+
+  input:focus,select:focus,button:focus-visible{
+    outline:3px solid rgba(37,99,235,.18);
+    outline-offset:2px;
+    border-color:var(--primary);
+  }
+
+  .app{
+    width:min(1480px, 100%);
+    margin:0 auto;
+    padding:18px;
+    min-width:0;
+    height:100vh;
+    height:100dvh;
+    display:grid;
+    grid-template-rows:minmax(0, 1fr);
+    overflow:hidden;
+  }
+
+  .status-pill{
+    display:grid;
+    place-items:center;
+    width:30px;
+    height:30px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid var(--line);
+    box-shadow:0 4px 14px rgba(15,23,42,.05);
+  }
+
+  .status-text{
+    position:absolute;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
+
+  .dot{
+    width:.58rem;
+    height:.58rem;
+    border-radius:999px;
+    background:var(--danger);
+  }
+  .dot.ok{ background:var(--ok); box-shadow:0 0 0 4px rgba(22,163,74,.12); }
+  .dot.warn{ background:var(--danger); box-shadow:0 0 0 4px rgba(220,38,38,.12); }
+  .dot.bad{ background:var(--danger); box-shadow:0 0 0 4px rgba(220,38,38,.12); }
+
+  .midi-connect{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr);
+    gap:9px;
+    align-items:center;
+    padding:0;
+    min-width:0;
+    max-width:100%;
+    overflow:hidden;
+  }
+
+  .midi-connect .warning{
+    grid-column:1 / -1;
+    padding:7px 9px;
+    border:1px solid #fed7aa;
+    background:#fff7ed;
+    color:#9a3412;
+    border-radius:12px;
+    font-size:.82rem;
+  }
+
+  .midi-status-row{
+    display:grid;
+    grid-template-columns:30px minmax(0, 1fr) auto;
+    gap:8px;
+    align-items:center;
+    min-width:0;
+  }
+
+  .compact-btn{
+    min-width:0;
+    padding:.34rem .50rem;
+    font-size:.82rem;
+    line-height:1;
+  }
+
+  .midi-connect-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:7px;
+    min-width:0;
+  }
+
+  .field{
+    display:grid;
+    gap:4px;
+  }
+
+  .field label{
+    color:#374151;
+    font-size:.72rem;
+    font-weight:800;
+  }
+
+  .field.compact{
+    display:grid;
+    grid-template-columns:auto minmax(0, 1fr);
+    align-items:center;
+    gap:4px;
+    min-width:0;
+  }
+
+  .field.compact label{
+    color:var(--muted);
+    font-size:.58rem;
+    letter-spacing:.04em;
+    font-weight:900;
+  }
+
+  .field.compact select{
+    min-width:0;
+    padding:.20rem .30rem;
+    border-radius:9px;
+    font-size:.78rem;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .midi-connect .field.compact select{
+    height:clamp(30px, 4.2vh, 34px);
+    padding:.18rem .36rem;
+    font-size:.78rem;
+    line-height:1;
+  }
+
+  .file-input{
+    position:absolute;
+    width:1px;
+    height:1px;
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .file-button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--line-strong);
+    background:#fff;
+    color:var(--text);
+    border-radius:999px;
+    padding:.52rem .76rem;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:transform .08s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+  }
+
+  .file-button:hover{
+    background:#f9fafb;
+    border-color:#8f9bad;
+  }
+
+  .layout{
+    display:block;
+    min-height:0;
+    overflow:hidden;
+  }
+
+  .workbench{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(270px, 320px);
+    gap:14px;
+    align-items:stretch;
+    height:100%;
+    min-height:0;
+  }
+
+  .panel{
+    background:rgba(255,255,255,.95);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    min-height:0;
+  }
+
+  .device-panel{
+    padding:0;
+    display:grid;
+    align-items:center;
+    height:100%;
+    min-height:0;
+    overflow:hidden;
+    background:transparent;
+    border:0;
+    box-shadow:none;
+  }
+
+  .inspector-panel{
+    padding:clamp(9px, 1.7vh, 14px);
+    display:grid;
+    gap:clamp(7px, 1.45vh, 12px);
+    grid-template-rows:auto auto auto auto minmax(0, 1fr);
+    align-content:start;
+    position:sticky;
+    top:0;
+    height:100%;
+    max-height:100%;
+    min-height:0;
+    overflow:hidden;
+  }
+
+  .board-wrap{
+    display:grid;
+    place-items:stretch center;
+    height:100%;
+    min-height:0;
+  }
+
+  .board{
+    width:min(900px, 100%);
+    height:100%;
+    max-height:100%;
+    background:linear-gradient(145deg,#fafafa,#e9ecf2);
+    border:1px solid #d6dbe4;
+    border-radius:22px;
+    padding:14px;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-template-rows:repeat(5, minmax(0, 1fr));
+    gap:5px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 14px 28px rgba(15,23,42,.08);
+    position:relative;
+  }
+
+  .screw{
+    position:absolute;
+    width:12px;
+    height:12px;
+    border-radius:999px;
+    background:radial-gradient(circle at 35% 30%, #fff 0, #d1d5db 35%, #9ca3af 100%);
+    border:1px solid #cbd5e1;
+  }
+  .screw::after{
+    content:"";
+    position:absolute;
+    left:3px;
+    right:3px;
+    top:5px;
+    height:2px;
+    background:#9ca3af;
+    transform:rotate(-28deg);
+    border-radius:2px;
+  }
+  .screw.tl{ top:7px; left:7px; }
+  .screw.tr{ top:7px; right:7px; }
+  .screw.bl{ bottom:7px; left:7px; }
+  .screw.br{ bottom:7px; right:7px; }
+
+  .knob-card{
+    position:relative;
+    min-width:0;
+    min-height:0;
+    overflow:hidden;
+    border:1px solid #d9dee7;
+    background:rgba(255,255,255,.84);
+    border-radius:15px;
+    padding:clamp(3px, .78vh, 6px);
+    padding-top:clamp(37px, 6.4vh, 48px);
+    display:grid;
+    grid-template-columns:minmax(0, 1fr);
+    grid-template-rows:minmax(0, 1fr) auto;
+    column-gap:8px;
+    row-gap:clamp(1px, .45vh, 4px);
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .knob-card:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 18px rgba(15,23,42,.08);
+    background:rgba(255,255,255,.95);
+  }
+  .knob-card.selected{
+    border-color:var(--primary);
+    background:linear-gradient(180deg, #f7fbff 0%, var(--primary-soft) 100%);
+    box-shadow:0 0 0 4px rgba(37,99,235,.10), 0 10px 20px rgba(15,23,42,.10);
+  }
+
+  .knob-card.reading{
+    border-color:#f97316;
+    box-shadow:0 0 0 4px rgba(249,115,22,.13), 0 10px 20px rgba(15,23,42,.10);
+  }
+
+  .knob-meta{
+    display:none;
+  }
+
+  .knob-face{
+    position:absolute;
+    left:50%;
+    top:clamp(3px, .58vh, 5px);
+    width:clamp(32px, 6.2vh, 44px);
+    height:clamp(32px, 6.2vh, 44px);
+    border-radius:999px;
+    transform:translateX(-50%);
+    background:
+      radial-gradient(circle at 50% 50%, #262626 0 51%, transparent 52%),
+      conic-gradient(transparent 0deg 24deg, var(--orange) 24deg 336deg, transparent 336deg 360deg),
+      radial-gradient(circle at 50% 50%, #374151 0 62%, #111827 63% 72%, #030712 73% 100%);
+    box-shadow:3px 4px 6px rgba(15,23,42,.18), inset 0 0 0 3px #2f333a;
+  }
+
+  .knob-face::before{
+    content:attr(data-label);
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:auto;
+    height:auto;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    font-family:var(--mono);
+    font-size:clamp(.82rem, 1.95vh, 1.08rem);
+    font-weight:950;
+    font-variant-numeric:tabular-nums;
+    line-height:1;
+    transform:translate(-50%, -50%);
+    text-shadow:0 1px 2px rgba(0,0,0,.65);
+    z-index:1;
+  }
+
+  .knob-face::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:3px;
+    width:3px;
+    height:6px;
+    border-radius:999px;
+    background:var(--orange);
+    transform:translateX(-50%);
+    box-shadow:0 0 0 1px rgba(249,115,22,.14);
+  }
+
+  .knob-fields{
+    grid-column:1 / -1;
+    grid-row:1;
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.18fr);
+    gap:clamp(3px, .65vh, 5px);
+    align-self:center;
+    min-width:0;
+    width:100%;
+  }
+
+  .knob-field{
+    display:grid;
+    min-width:0;
+    gap:2px;
+  }
+
+  .knob-field label{
+    color:var(--muted);
+    font-size:clamp(.50rem, 1.1vh, .60rem);
+    font-weight:900;
+    letter-spacing:.02em;
+    line-height:1;
+    text-align:center;
+  }
+
+  .knob-field select,
+  .knob-field input{
+    height:clamp(19px, 3.35vh, 26px);
+    border-radius:9px;
+    padding:2px 4px;
+    font-size:clamp(.68rem, 1.55vh, .86rem);
+    font-weight:850;
+  }
+
+  .knob-field select{
+    appearance:none;
+    text-align:center;
+    text-align-last:center;
+  }
+
+  .knob-field input{
+    font-family:var(--mono);
+    text-align:center;
+  }
+
+  .knob-actions{
+    grid-column:1 / -1;
+    grid-row:2;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:clamp(4px, .7vh, 5px);
+    min-width:0;
+    align-self:end;
+  }
+
+  .knob-actions button{
+    min-height:clamp(18px, 3.2vh, 24px);
+    padding:3px 6px;
+    border-radius:9px;
+    font-size:clamp(.66rem, 1.45vh, .78rem);
+  }
+
+  .control-section{
+    display:grid;
+    gap:clamp(6px, 1.25vh, 10px);
+    padding-top:2px;
+  }
+
+  .control-section + .control-section,
+  .control-section + .midi-readout-panel,
+  .midi-readout-panel + .log-panel,
+  .control-section + .log-panel{
+    border-top:1px solid var(--line);
+    padding-top:clamp(7px, 1.45vh, 12px);
+  }
+
+  .action-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  .command-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  .command-grid button,
+  .file-actions button,
+  .file-actions .file-button{
+    min-height:clamp(34px, 5.1vh, 42px);
+  }
+
+  .inspector-panel input,
+  .inspector-panel select{
+    height:clamp(42px, 5.6vh, 48px);
+    padding:clamp(.32rem, 1vh, .48rem) .56rem;
+    line-height:1.1;
+  }
+
+  .inspector-panel button,
+  .inspector-panel .file-button{
+    padding:clamp(.38rem, 1.1vh, .52rem) .76rem;
+  }
+
+  .midi-readout-panel{
+    min-height:clamp(42px, 6.4vh, 56px);
+    display:flex;
+    align-items:center;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#f8fafc;
+    padding:clamp(8px, 1.25vh, 11px) 12px;
+    color:#0f172a;
+    font-family:var(--mono);
+    font-size:clamp(.86rem, 1.75vh, 1rem);
+    line-height:1.35;
+    overflow:hidden;
+    white-space:normal;
+  }
+
+  .log-panel{
+    display:grid;
+    grid-template-rows:auto minmax(0, 1fr);
+    gap:4px;
+    min-height:0;
+    border:1px solid var(--line);
+    background:#f8fafc;
+    border-radius:14px;
+    padding:7px 10px 10px;
+  }
+
+  .log-title{
+    font-weight:850;
+    font-size:.82rem;
+    color:#334155;
+  }
+
+  .log-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    min-width:0;
+    min-height:24px;
+  }
+
+  .log-head .ghost{
+    padding:.12rem .28rem;
+    font-size:.78rem;
+  }
+
+  .log{
+    min-height:0;
+    height:auto;
+    overflow:auto;
+    background:#0b1020;
+    color:#d1e7ff;
+    border-radius:12px;
+    padding:clamp(9px, 1.35vh, 12px);
+    font-family:var(--mono);
+    font-size:clamp(.70rem, 1.45vh, .82rem);
+    line-height:1.35;
+    white-space:normal;
+    min-width:0;
+  }
+
+  .console-line{
+    display:flex;
+    align-items:baseline;
+    gap:.34rem;
+    min-width:0;
+  }
+
+  .console-line + .console-line{
+    margin-top:.18rem;
+  }
+
+  .console-time{
+    flex:0 0 auto;
+    color:#88a5c9;
+    font-size:.70em;
+  }
+
+  .console-message{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .console-current .console-message{
+    color:#fff;
+    font-weight:850;
+  }
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:22px;
+    transform:translateX(-50%) translateY(12px);
+    background:#111827;
+    color:white;
+    border-radius:999px;
+    padding:.68rem .95rem;
+    box-shadow:0 12px 28px rgba(0,0,0,.22);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .15s ease, transform .15s ease;
+    z-index:50;
+    max-width:min(92vw, 680px);
+    text-align:center;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+
+  @media (max-width: 1080px){
+    .workbench{
+      grid-template-columns:minmax(0, 1fr) minmax(260px, 300px);
+      gap:9px;
+      align-items:stretch;
+    }
+    .inspector-panel{
+      position:sticky;
+      grid-template-columns:1fr;
+      padding:clamp(8px, 1.45vh, 11px);
+      gap:clamp(6px, 1.2vh, 10px);
+      max-height:100%;
+    }
+    .read-strip,
+    .midi-readout-panel,
+    .log-panel{
+      grid-column:auto;
+    }
+    .board{
+      grid-template-rows:repeat(5, minmax(0, 1fr));
+      padding:17px;
+      gap:4px;
+      border-radius:20px;
+    }
+    .knob-card{
+      grid-template-columns:minmax(0, 1fr);
+      padding:4px;
+      padding-top:38px;
+      column-gap:5px;
+      min-height:0;
+    }
+    .knob-face{ width:34px; height:34px; }
+    .knob-face::before{ font-size:.88rem; }
+    .knob-fields{ gap:4px; }
+    .knob-field select,
+    .knob-field input{
+      height:24px;
+      padding:2px 3px;
+      font-size:.78rem;
+    }
+    .knob-actions button{
+      min-height:20px;
+      padding:2px 5px;
+      font-size:.72rem;
+    }
+  }
+
+  @media (max-width: 760px){
+    .app{ padding:8px; }
+    .workbench{
+      grid-template-columns:minmax(0, 1fr) minmax(235px, 275px);
+      gap:8px;
+      align-items:stretch;
+    }
+    .inspector-panel{
+      padding:clamp(8px, 1.35vh, 10px);
+      gap:clamp(6px, 1.1vh, 9px);
+      grid-template-rows:auto auto auto auto minmax(0, 1fr);
+    }
+    .action-row,
+    .command-grid{
+      gap:6px;
+    }
+    button,
+    .file-button{
+      padding:.46rem .62rem;
+      font-size:.92rem;
+    }
+    .inspector-panel button,
+    .inspector-panel .file-button{
+      padding:clamp(.34rem, 1vh, .46rem) .62rem;
+    }
+    .board{
+      grid-template-rows:repeat(5, minmax(0, 1fr));
+      padding:16px;
+      gap:4px;
+      border-radius:18px;
+    }
+    .knob-card{
+      grid-template-columns:minmax(0, 1fr);
+      padding:4px;
+      padding-top:36px;
+      column-gap:4px;
+      min-height:0;
+    }
+    .knob-face{
+      width:32px;
+      height:32px;
+    }
+    .knob-face::before{ font-size:.82rem; }
+    .knob-fields{ gap:5px; }
+    .knob-field label{ font-size:.56rem; }
+    .knob-field select,
+    .knob-field input{
+      height:24px;
+      font-size:.72rem;
+      padding:2px 3px;
+    }
+    .knob-actions{ gap:4px; }
+    .knob-actions button{
+      min-height:20px;
+      padding:2px 4px;
+      font-size:.68rem;
+    }
+  }
+
+  @media (max-width: 620px){
+    .app{
+      height:auto;
+      min-height:100vh;
+      overflow:visible;
+    }
+    .layout{
+      overflow:visible;
+    }
+    .workbench{
+      grid-template-columns:1fr;
+      align-items:start;
+      height:auto;
+    }
+    .device-panel{
+      height:auto;
+      overflow:visible;
+    }
+    .board-wrap{
+      height:auto;
+    }
+    .inspector-panel{
+      position:static;
+      height:auto;
+      max-height:none;
+      overflow:visible;
+    }
+    .board{
+      width:min(500px, 100%);
+      height:auto;
+      max-height:none;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      grid-template-rows:none;
+    }
+    .knob-card{
+      grid-column:auto !important;
+      grid-row:auto !important;
+      min-height:120px;
+    }
+    .knob-fields{
+      grid-template-columns:minmax(0, .72fr) minmax(0, 1.28fr);
+    }
+    .knob-field:nth-child(3){
+      grid-column:1 / -1;
+    }
+  }
+
+  @media (max-width: 480px){
+    .status-pill{
+      width:24px;
+      height:24px;
+    }
+    .midi-status-row{
+      grid-template-columns:24px minmax(0, 1fr) auto auto;
+      gap:6px;
+    }
+    .compact-btn{
+      padding:.30rem .42rem;
+      font-size:.78rem;
+    }
+    .field.compact label{
+      font-size:.52rem;
+    }
+    .field.compact select{
+      font-size:.70rem;
+      padding:.18rem .24rem;
+    }
+    .inspector-panel button,
+    .inspector-panel .file-button{
+      padding:clamp(.30rem, .9vh, .42rem) .52rem;
+    }
+    .board{
+      grid-template-rows:none;
+      gap:6px;
+      padding:16px;
+    }
+    .knob-card{
+      grid-template-columns:minmax(0, 1fr);
+      padding:5px;
+      padding-top:38px;
+      column-gap:4px;
+      min-height:120px;
+    }
+    .knob-face{
+      width:34px;
+      height:34px;
+    }
+    .knob-face::before{ font-size:.88rem; }
+    .action-row,
+    .command-grid{
+      grid-template-columns:1fr 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="layout">
+    <section class="workbench">
+      <div class="panel device-panel">
+        <div class="board-wrap">
+          <div id="board" class="board" aria-label="MIDIC15 knob layout">
+            <span class="screw tl"></span>
+            <span class="screw tr"></span>
+            <span class="screw bl"></span>
+            <span class="screw br"></span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel inspector-panel">
+        <div class="control-section midi-connect">
+          <div id="supportMessage" class="warning" hidden></div>
+          <div class="midi-status-row">
+            <div class="status-pill" aria-live="polite" title="MIDI status">
+              <span id="statusDot" class="dot bad"></span>
+              <span id="statusText" class="status-text">Disconnected</span>
+            </div>
+            <button id="requestBtn" class="primary compact-btn" type="button">MIDI</button>
+            <button id="refreshBtn" class="compact-btn" type="button" aria-label="Refresh MIDI ports" title="Refresh MIDI ports" disabled>↻</button>
+          </div>
+          <div class="midi-connect-grid">
+            <div class="field compact">
+              <label for="outputSelect">OUT</label>
+              <select id="outputSelect" disabled></select>
+            </div>
+            <div class="field compact">
+              <label for="inputSelect">IN</label>
+              <select id="inputSelect" disabled></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-section read-strip">
+          <div class="command-grid">
+            <button id="readSequenceBtn" class="soft" type="button">Load All</button>
+            <button id="writeAllBtn" class="primary" type="button">Write All</button>
+          </div>
+        </div>
+
+        <div class="control-section">
+          <div class="action-row file-actions">
+            <button id="exportJsonBtn" type="button">Export</button>
+            <label class="file-button" for="importJsonInput">Import</label>
+            <input id="importJsonInput" class="file-input" type="file" accept="application/json,.json">
+          </div>
+        </div>
+
+        <div id="midiReadout" class="midi-readout-panel">Waiting for MIDI</div>
+
+        <div class="log-panel">
+          <div class="log-head">
+            <div class="log-title">Console</div>
+            <button id="clearLogBtn" class="ghost" type="button">Clear</button>
+          </div>
+          <div id="logBox" class="log"></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const WRITE_DELAY_MS = 25;
+  const SEND_RESET_MARKERS = true;
+  const SEND_PREAMBLE = true;
+
+  const visualLayout = [
+    { hardware: 2,  row: 1, col: 1 },
+    { hardware: 3,  row: 1, col: 2 },
+    { hardware: 4,  row: 1, col: 3 },
+    { hardware: 5,  row: 2, col: 1 },
+    { hardware: 6,  row: 2, col: 2 },
+    { hardware: 7,  row: 2, col: 3 },
+    { hardware: 8,  row: 3, col: 1 },
+    { hardware: 9,  row: 3, col: 2 },
+    { hardware: 0,  row: 3, col: 3 },
+    { hardware: 1,  row: 4, col: 1 },
+    { hardware: 12, row: 4, col: 2 },
+    { hardware: 13, row: 4, col: 3 },
+    { hardware: 14, row: 5, col: 1 },
+    { hardware: 10, row: 5, col: 2 },
+    { hardware: 11, row: 5, col: 3 },
+  ];
+
+  const state = {
+    midiAccess: null,
+    outputId: "",
+    inputId: "",
+    inputSelectionTouched: false,
+    selectedIndex: 0,
+    readMode: null,
+    readCooldownUntil: 0,
+    midiReadout: "Waiting for MIDI",
+    consoleStatus: "Ready: click MIDI",
+    consoleLines: [],
+    knobs: visualLayout.map((item, index) => ({
+      hardware: item.hardware,
+      label: index + 1,
+      row: item.row,
+      col: item.col,
+      type: "cc",
+      channel: 1,
+      number: 20 + index,
+    })),
+  };
+
+  const el = {
+    statusDot: document.getElementById("statusDot"),
+    statusText: document.getElementById("statusText"),
+    board: document.getElementById("board"),
+    requestBtn: document.getElementById("requestBtn"),
+    refreshBtn: document.getElementById("refreshBtn"),
+    outputSelect: document.getElementById("outputSelect"),
+    inputSelect: document.getElementById("inputSelect"),
+    supportMessage: document.getElementById("supportMessage"),
+    writeAllBtn: document.getElementById("writeAllBtn"),
+    readSequenceBtn: document.getElementById("readSequenceBtn"),
+    exportJsonBtn: document.getElementById("exportJsonBtn"),
+    importJsonInput: document.getElementById("importJsonInput"),
+    midiReadout: document.getElementById("midiReadout"),
+    logBox: document.getElementById("logBox"),
+    clearLogBtn: document.getElementById("clearLogBtn"),
+    toast: document.getElementById("toast"),
+  };
+
+  function clampInt(value, min, max, fallback) {
+    const n = Number.parseInt(value, 10);
+    if (!Number.isFinite(n)) return fallback;
+    return Math.min(max, Math.max(min, n));
+  }
+
+  function hexByte(n) {
+    return (n & 0xff).toString(16).toUpperCase().padStart(2, "0");
+  }
+
+  function hexMessage(bytes) {
+    return bytes.map(hexByte).join(" ");
+  }
+
+  function showToast(message) {
+    el.toast.textContent = message;
+    el.toast.classList.add("show");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => {
+      el.toast.classList.remove("show");
+    }, 2400);
+  }
+
+  function renderConsole() {
+    el.logBox.replaceChildren();
+
+    if (state.consoleStatus) {
+      el.logBox.appendChild(createConsoleLine("", state.consoleStatus, true));
+    }
+
+    state.consoleLines.forEach((entry) => {
+      el.logBox.appendChild(createConsoleLine(entry.time, entry.message, false));
+    });
+
+    el.logBox.scrollTop = el.logBox.scrollHeight;
+  }
+
+  function createConsoleLine(time, message, isCurrent) {
+    const line = document.createElement("div");
+    line.className = `console-line${isCurrent ? " console-current" : ""}`;
+
+    if (time) {
+      const timeSpan = document.createElement("span");
+      timeSpan.className = "console-time";
+      timeSpan.textContent = time;
+      line.appendChild(timeSpan);
+    }
+
+    const messageSpan = document.createElement("span");
+    messageSpan.className = "console-message";
+    messageSpan.textContent = message;
+    line.appendChild(messageSpan);
+
+    return line;
+  }
+
+  function setMidiReadout(message) {
+    state.midiReadout = message;
+    el.midiReadout.textContent = state.midiReadout;
+  }
+
+  function setConsoleStatus(message) {
+    state.consoleStatus = message;
+    renderConsole();
+  }
+
+  function log(message) {
+    const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    state.consoleLines.push({ time, message });
+    state.consoleLines = state.consoleLines.slice(-24);
+    renderConsole();
+  }
+
+  function setStatus(kind, text) {
+    const normalizedKind = kind === "ok" ? "ok" : "bad";
+    el.statusDot.className = `dot ${normalizedKind}`.trim();
+    el.statusText.textContent = text;
+    const pill = el.statusDot.closest(".status-pill");
+    if (pill) pill.setAttribute("aria-label", normalizedKind === "ok" ? "MIDI connected" : "MIDI disconnected");
+  }
+
+  function midiAccessSupported() {
+    return "requestMIDIAccess" in navigator;
+  }
+
+  function isLikelyMIDIC15(port) {
+    const name = `${port.name || ""} ${port.manufacturer || ""}`.toLowerCase();
+    return name.includes("4ac2cc15") || name.includes("midic15") || name.includes("midi-c15") || name.includes("4ac20c") || name.includes("midi_usb");
+  }
+
+  function getOutputs() {
+    if (!state.midiAccess) return [];
+    return Array.from(state.midiAccess.outputs.values());
+  }
+
+  function getInputs() {
+    if (!state.midiAccess) return [];
+    return Array.from(state.midiAccess.inputs.values());
+  }
+
+  function getSelectedOutput() {
+    if (!state.midiAccess || !state.outputId) return null;
+    return state.midiAccess.outputs.get(state.outputId) || null;
+  }
+
+  function getSelectedInput() {
+    if (!state.midiAccess || !state.inputId) return null;
+    return state.midiAccess.inputs.get(state.inputId) || null;
+  }
+
+  function optionLabel(port) {
+    return port.name || port.id || "Unknown device";
+  }
+
+  function refreshPortSelectors() {
+    const outputs = getOutputs();
+    const inputs = getInputs();
+
+    el.outputSelect.innerHTML = "";
+    el.inputSelect.innerHTML = "";
+
+    if (outputs.length === 0) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No MIDI output found";
+      el.outputSelect.appendChild(option);
+      state.outputId = "";
+    } else {
+      outputs.forEach((port) => {
+        const option = document.createElement("option");
+        option.value = port.id;
+        option.textContent = optionLabel(port);
+        el.outputSelect.appendChild(option);
+      });
+
+      const currentOutputIsValid = state.outputId && outputs.some((p) => p.id === state.outputId);
+      const likely = outputs.find(isLikelyMIDIC15);
+      if (!currentOutputIsValid && likely) {
+        state.outputId = likely.id;
+      } else if (!currentOutputIsValid) {
+        state.outputId = outputs[0].id;
+      }
+      el.outputSelect.value = state.outputId;
+    }
+
+    const inputNone = document.createElement("option");
+    inputNone.value = "";
+    inputNone.textContent = "No input monitor";
+    el.inputSelect.appendChild(inputNone);
+
+    inputs.forEach((port) => {
+      const option = document.createElement("option");
+      option.value = port.id;
+      option.textContent = optionLabel(port);
+      el.inputSelect.appendChild(option);
+    });
+
+    const currentInputIsValid = state.inputId && inputs.some((p) => p.id === state.inputId);
+    const likelyInput = inputs.find(isLikelyMIDIC15);
+    if (currentInputIsValid) {
+      el.inputSelect.value = state.inputId;
+    } else if (state.inputSelectionTouched && !state.inputId) {
+      state.inputId = "";
+    } else if (likelyInput) {
+      state.inputId = likelyInput.id;
+    } else {
+      state.inputId = "";
+    }
+    el.inputSelect.value = state.inputId;
+
+    el.outputSelect.disabled = !state.midiAccess || outputs.length === 0;
+    el.inputSelect.disabled = !state.midiAccess;
+    el.refreshBtn.disabled = !state.midiAccess;
+
+    attachInputMonitor();
+
+    if (!state.midiAccess) {
+      setStatus("bad", "Disconnected");
+    } else if (outputs.length === 0) {
+      setStatus("bad", "No output");
+    } else {
+      const selected = getSelectedOutput();
+      setStatus("ok", selected ? `Output: ${selected.name || "MIDI"}` : "MIDI connected");
+    }
+  }
+
+  function attachInputMonitor() {
+    getInputs().forEach((input) => {
+      input.onmidimessage = null;
+    });
+
+    const input = getSelectedInput();
+    if (!input) return;
+
+    input.onmidimessage = (event) => {
+      const bytes = Array.from(event.data || []);
+      handleMidiInput(bytes);
+    };
+  }
+
+  function decodeMidi(bytes) {
+    if (!bytes.length) return { text: "empty", type: "unknown" };
+
+    const status = bytes[0];
+    const channel = (status & 0x0f) + 1;
+    const command = status & 0xf0;
+    const d1 = bytes[1] ?? 0;
+    const d2 = bytes[2] ?? 0;
+
+    if (command === 0xb0) {
+      return { text: `Ch ${channel} / CC ${d1} / Value ${d2}`, type: "cc", channel, number: d1, value: d2 };
+    }
+    if (command === 0x90) {
+      return { text: `Ch ${channel} / ON ${d1} / Vel ${d2}`, type: "noteon", channel, number: d1, value: d2 };
+    }
+    if (command === 0x80) {
+      return { text: `Ch ${channel} / OFF ${d1} / Vel ${d2}`, type: "noteoff", channel, number: d1, value: d2 };
+    }
+    return { text: `Other ${hexMessage(bytes)}`, type: "unknown" };
+  }
+
+
+  function readableMidi(decoded) {
+    if (decoded.type === "cc") return `Ch ${decoded.channel} / CC ${decoded.number}`;
+    if (decoded.type === "noteon") return `Ch ${decoded.channel} / ON ${decoded.number}`;
+    if (decoded.type === "noteoff") return `Ch ${decoded.channel} / OFF ${decoded.number}`;
+    return decoded.text;
+  }
+
+  function compactMidi(decoded) {
+    if (decoded.type === "cc") return `Ch ${decoded.channel} / CC ${decoded.number}`;
+    if (decoded.type === "noteon") return `Ch ${decoded.channel} / ON ${decoded.number}`;
+    if (decoded.type === "noteoff") return `Ch ${decoded.channel} / OFF ${decoded.number}`;
+    return decoded.text;
+  }
+
+  function canUseDecodedForRead(decoded) {
+    return decoded.type === "cc" || decoded.type === "noteon" || decoded.type === "noteoff";
+  }
+
+  function updateReadStatus() {
+    el.readSequenceBtn.disabled = false;
+    el.readSequenceBtn.textContent = "Load All";
+    el.readSequenceBtn.classList.remove("danger");
+    el.readSequenceBtn.classList.add("soft");
+
+    if (!state.readMode) {
+      setConsoleStatus(state.midiAccess ? "Idle" : "Ready: click MIDI");
+      syncKnobActionButtons();
+      return;
+    }
+
+    const knob = state.knobs[state.readMode.index];
+    const isSequence = state.readMode.kind === "sequence";
+    const prefix = isSequence ? `Load ${state.readMode.index + 1}/15` : `Load ${knob.label}`;
+    setConsoleStatus(`${prefix}: turn knob`);
+
+    if (isSequence) {
+      el.readSequenceBtn.textContent = "Stop";
+      el.readSequenceBtn.classList.remove("soft");
+      el.readSequenceBtn.classList.add("danger");
+    } else {
+      el.readSequenceBtn.disabled = true;
+    }
+
+    syncKnobActionButtons();
+  }
+
+  function requireInputMonitor() {
+    if (!state.midiAccess) {
+      throw new Error('Click "MIDI" first.');
+    }
+    if (!getSelectedInput()) {
+      throw new Error("Select a MIDI input monitor.");
+    }
+  }
+
+  function stopReadMode(message) {
+    state.readMode = null;
+    state.readCooldownUntil = 0;
+    updateReadStatus();
+    if (message) {
+      log(message);
+      showToast(message);
+    }
+  }
+
+  function startReadKnob(index) {
+    try {
+      requireInputMonitor();
+      state.selectedIndex = index;
+      state.readMode = { kind: "single", index };
+      state.readCooldownUntil = 0;
+      updateReadStatus();
+      showToast(`Move knob ${state.knobs[index].label} slightly.`);
+    } catch (error) {
+      showToast(error.message || String(error));
+    }
+  }
+
+  function startReadSequence() {
+    try {
+      requireInputMonitor();
+      state.selectedIndex = 0;
+      state.readMode = { kind: "sequence", index: 0 };
+      state.readCooldownUntil = 0;
+      renderAll();
+      updateReadStatus();
+      showToast("Turn the knobs slightly, starting from the top-left.");
+    } catch (error) {
+      showToast(error.message || String(error));
+    }
+  }
+
+  function applyReadMessage(decoded) {
+    if (!state.readMode || !canUseDecodedForRead(decoded)) return false;
+
+    const now = Date.now();
+    if (now < state.readCooldownUntil) return true;
+
+    const index = state.readMode.index;
+    const knob = state.knobs[index];
+
+    knob.type = decoded.type === "cc" ? "cc" : decoded.type;
+    knob.channel = decoded.channel;
+    knob.number = decoded.number;
+    state.selectedIndex = index;
+
+    log(`Load ${knob.label}: ${compactMidi(decoded)}`);
+
+    if (state.readMode.kind === "single") {
+      state.readMode = null;
+      state.readCooldownUntil = 0;
+      renderAll();
+      updateReadStatus();
+      showToast(`Knob ${knob.label} loaded.`);
+      return true;
+    }
+
+    const nextIndex = index + 1;
+    if (nextIndex >= state.knobs.length) {
+      state.readMode = null;
+      state.readCooldownUntil = 0;
+      renderAll();
+      updateReadStatus();
+      showToast("Load All complete for all 15 knobs.");
+      return true;
+    }
+
+    state.readMode.index = nextIndex;
+    state.selectedIndex = nextIndex;
+    state.readCooldownUntil = now + 900;
+    renderAll();
+    updateReadStatus();
+    showToast(`Knob ${knob.label} loaded. Move the next knob.`);
+    return true;
+  }
+
+  function handleMidiInput(bytes) {
+    const decoded = decodeMidi(bytes);
+    setMidiReadout(decoded.text);
+
+    if (applyReadMessage(decoded)) {
+      return;
+    }
+
+  }
+
+  function populateCardChannelSelect(select, value) {
+    select.innerHTML = "";
+    for (let i = 1; i <= 16; i += 1) {
+      const option = document.createElement("option");
+      option.value = String(i);
+      option.textContent = String(i);
+      select.appendChild(option);
+    }
+    select.value = String(value);
+  }
+
+  function populateCardTypeSelect(select, value) {
+    [
+      ["cc", "CC"],
+      ["noteon", "ON"],
+      ["noteoff", "OFF"],
+    ].forEach(([type, label]) => {
+      const option = document.createElement("option");
+      option.value = type;
+      option.textContent = label;
+      select.appendChild(option);
+    });
+    select.value = value;
+  }
+
+  function syncKnobActionButtons() {
+    el.board.querySelectorAll("[data-action]").forEach((button) => {
+      const index = Number(button.dataset.index);
+      const action = button.dataset.action;
+      const isActiveSingle = state.readMode && state.readMode.kind === "single" && state.readMode.index === index;
+      const readIsBlocked = Boolean(state.readMode && !isActiveSingle);
+
+      if (action === "load") {
+        button.textContent = isActiveSingle ? "Stop" : "Load";
+        button.disabled = readIsBlocked;
+        button.classList.toggle("danger", Boolean(isActiveSingle));
+        button.classList.toggle("soft", !isActiveSingle);
+      } else if (action === "write") {
+        button.disabled = Boolean(state.readMode);
+      }
+    });
+  }
+
+  function renderBoard() {
+    const existing = Array.from(el.board.querySelectorAll(".knob-card"));
+    existing.forEach((node) => node.remove());
+
+    state.knobs.forEach((knob, index) => {
+      const card = document.createElement("div");
+      const isReading = state.readMode && state.readMode.index === index;
+      card.className = "knob-card" + (index === state.selectedIndex ? " selected" : "") + (isReading ? " reading" : "");
+      card.style.gridColumn = String(knob.col);
+      card.style.gridRow = String(knob.row);
+      card.dataset.index = String(index);
+
+      const meta = document.createElement("div");
+      meta.className = "knob-meta";
+
+      const id = document.createElement("span");
+      id.className = "badge";
+      id.textContent = `No. ${knob.label}`;
+
+      meta.append(id);
+
+      const face = document.createElement("div");
+      face.className = "knob-face";
+      face.dataset.label = String(knob.label);
+      face.setAttribute("aria-hidden", "true");
+
+      const fields = document.createElement("div");
+      fields.className = "knob-fields";
+
+      const channelField = document.createElement("div");
+      channelField.className = "knob-field";
+      const channelLabel = document.createElement("label");
+      channelLabel.textContent = "Channel";
+      channelLabel.setAttribute("for", `knob-${index}-channel`);
+      const channelSelect = document.createElement("select");
+      channelSelect.id = `knob-${index}-channel`;
+      channelSelect.dataset.field = "channel";
+      channelSelect.dataset.index = String(index);
+      populateCardChannelSelect(channelSelect, knob.channel);
+      channelField.append(channelLabel, channelSelect);
+
+      const typeField = document.createElement("div");
+      typeField.className = "knob-field";
+      const typeLabelEl = document.createElement("label");
+      typeLabelEl.textContent = "Mode";
+      typeLabelEl.setAttribute("for", `knob-${index}-type`);
+      const typeSelect = document.createElement("select");
+      typeSelect.id = `knob-${index}-type`;
+      typeSelect.dataset.field = "type";
+      typeSelect.dataset.index = String(index);
+      populateCardTypeSelect(typeSelect, knob.type);
+      typeField.append(typeLabelEl, typeSelect);
+
+      const numberField = document.createElement("div");
+      numberField.className = "knob-field";
+      const numberLabel = document.createElement("label");
+      numberLabel.textContent = "Number";
+      numberLabel.setAttribute("for", `knob-${index}-number`);
+      const numberInput = document.createElement("input");
+      numberInput.id = `knob-${index}-number`;
+      numberInput.type = "text";
+      numberInput.inputMode = "numeric";
+      numberInput.pattern = "[0-9]*";
+      numberInput.maxLength = 3;
+      numberInput.value = String(knob.number);
+      numberInput.dataset.field = "number";
+      numberInput.dataset.index = String(index);
+      numberField.append(numberLabel, numberInput);
+
+      fields.append(channelField, typeField, numberField);
+
+      const actions = document.createElement("div");
+      actions.className = "knob-actions";
+
+      const loadButton = document.createElement("button");
+      loadButton.type = "button";
+      loadButton.className = "soft";
+      loadButton.dataset.action = "load";
+      loadButton.dataset.index = String(index);
+      loadButton.textContent = "Load";
+
+      const writeButton = document.createElement("button");
+      writeButton.type = "button";
+      writeButton.className = "primary";
+      writeButton.dataset.action = "write";
+      writeButton.dataset.index = String(index);
+      writeButton.textContent = "Write";
+
+      actions.append(loadButton, writeButton);
+      card.append(meta, face, fields, actions);
+
+      el.board.appendChild(card);
+    });
+
+    syncKnobActionButtons();
+  }
+
+  function renderAll() {
+    renderBoard();
+  }
+
+  function typeLabel(type) {
+    if (type === "noteon") return "Note On";
+    if (type === "noteoff") return "Note Off";
+    return "CC";
+  }
+
+  function shortTypeValue(type) {
+    if (type === "noteon") return "ON";
+    if (type === "noteoff") return "OFF";
+    return "CC";
+  }
+
+  function typeFromMode(mode) {
+    const value = String(mode || "").trim().toLowerCase();
+    if (value === "on" || value === "noteon" || value === "note on") return "noteon";
+    if (value === "off" || value === "noteoff" || value === "note off") return "noteoff";
+    return "cc";
+  }
+
+  function shortWriteLabel(knob) {
+    return `Ch ${knob.channel} / ${shortTypeValue(knob.type)} ${knob.number}`;
+  }
+
+  function normalizeNumberInput(control, knob, allowBlank) {
+    const digits = String(control.value).replace(/\D/g, "");
+    if (!digits) {
+      if (!allowBlank) control.value = String(knob.number);
+      return;
+    }
+
+    const parsed = clampInt(digits, 0, 127, knob.number || 0);
+    knob.number = parsed;
+    control.value = String(parsed);
+  }
+
+  function statusBaseForType(type) {
+    if (type === "noteon") return 0x90;
+    if (type === "noteoff") return 0x80;
+    return 0xb0;
+  }
+
+  function protocolMessagesForKnob(knob) {
+    const ch = (clampInt(knob.channel, 1, 16, 1) - 1) & 0x0f;
+    const number = clampInt(knob.number, 0, 127, 0) & 0x7f;
+    const hardware = clampInt(knob.hardware, 0, 127, 0) & 0x7f;
+    const messages = [];
+
+    if (SEND_RESET_MARKERS) {
+      messages.push([0xff]);
+    }
+
+    if (SEND_PREAMBLE) {
+      messages.push([0x90 | ch, number, hardware]);
+      messages.push([0x80 | ch, number, hardware]);
+    }
+
+    messages.push([statusBaseForType(knob.type) | ch, number, hardware]);
+
+    if (SEND_RESET_MARKERS) {
+      messages.push([0xff]);
+    }
+
+    return messages;
+  }
+
+  async function ensureOutput() {
+    const output = getSelectedOutput();
+    if (!state.midiAccess) {
+      throw new Error('Click "MIDI" first.');
+    }
+    if (!output) {
+      throw new Error("Select a MIDI output.");
+    }
+    return output;
+  }
+
+  function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function sendBytes(output, bytes) {
+    output.send(bytes);
+  }
+
+  async function writeKnob(index) {
+    const output = await ensureOutput();
+    const knob = state.knobs[index];
+    const delay = WRITE_DELAY_MS;
+    const messages = protocolMessagesForKnob(knob);
+
+    setConsoleStatus(`Write ${knob.label}: ${shortWriteLabel(knob)}`);
+
+    for (const bytes of messages) {
+      await sendBytes(output, bytes);
+      await wait(delay);
+    }
+  }
+
+  async function writeKnobFromCard(index) {
+    try {
+      state.selectedIndex = index;
+      await writeKnob(index);
+      showToast(`Knob ${state.knobs[index].label} written.`);
+      log(`Write ${state.knobs[index].label}: ${shortWriteLabel(state.knobs[index])}`);
+      renderAll();
+    } catch (error) {
+      showToast(error.message || String(error));
+      log(`ERROR: ${error.message || String(error)}`);
+    }
+  }
+
+  async function writeAll() {
+    try {
+      await ensureOutput();
+
+      const ok = window.confirm("Write all 15 knobs to the device? Make sure other MIDI apps such as your DAW are closed.");
+      if (!ok) return;
+
+      for (let i = 0; i < state.knobs.length; i += 1) {
+        await writeKnob(i);
+        await wait(40);
+      }
+      setConsoleStatus("Write all done");
+      log("Write all: done");
+      showToast("All 15 knobs written.");
+    } catch (error) {
+      showToast(error.message || String(error));
+      log(`ERROR: ${error.message || String(error)}`);
+    }
+  }
+
+  async function requestMidiAccess() {
+    if (!midiAccessSupported()) {
+      el.supportMessage.hidden = false;
+      el.supportMessage.textContent = "This browser does not support Web MIDI. Open it in Chrome or Edge.";
+      setStatus("bad", "No Web MIDI");
+      return;
+    }
+
+    try {
+      state.midiAccess = await navigator.requestMIDIAccess({ sysex: false });
+      state.midiAccess.onstatechange = () => {
+        refreshPortSelectors();
+      };
+      el.requestBtn.textContent = "MIDI enabled";
+      el.requestBtn.disabled = true;
+      refreshPortSelectors();
+      setConsoleStatus("MIDI ready");
+      showToast("MIDI access granted.");
+    } catch (error) {
+      el.supportMessage.hidden = false;
+      el.supportMessage.textContent = "MIDI access was not granted. Check your browser permissions.";
+      setStatus("bad", "No permission");
+      log(`ERROR: ${error.message || String(error)}`);
+    }
+  }
+
+  function serializeConfig() {
+    return {
+      app: "MIDIC15 Web Config",
+      version: 2,
+      knobs: state.knobs.map((knob) => ({
+        channel: clampInt(knob.channel, 1, 16, 1),
+        mode: shortTypeValue(knob.type),
+        number: clampInt(knob.number, 0, 127, 0),
+        label: knob.label,
+        hardware: knob.hardware,
+      })),
+      options: {
+        delayMs: WRITE_DELAY_MS,
+        sendResetMarkers: SEND_RESET_MARKERS,
+        sendPreamble: SEND_PREAMBLE,
+      },
+    };
+  }
+
+  function validateAndApplyConfig(data) {
+    if (!data || !Array.isArray(data.knobs)) {
+      throw new Error("Invalid JSON format.");
+    }
+
+    state.knobs.forEach((knob, index) => {
+      const incoming = data.knobs[index];
+      if (!incoming) return;
+
+      knob.channel = clampInt(incoming.channel, 1, 16, 1);
+      knob.type = typeFromMode(incoming.mode);
+      knob.number = clampInt(incoming.number, 0, 127, 0);
+    });
+
+    renderAll();
+  }
+
+  function exportJson() {
+    const blob = new Blob([JSON.stringify(serializeConfig(), null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "MIDIC15_config.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast("JSON exported.");
+  }
+
+  async function importJson(file) {
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      validateAndApplyConfig(JSON.parse(text));
+      showToast("JSON imported.");
+    } catch (error) {
+      showToast(error.message || String(error));
+    } finally {
+      el.importJsonInput.value = "";
+    }
+  }
+
+  function bindEvents() {
+    el.requestBtn.addEventListener("click", requestMidiAccess);
+    el.refreshBtn.addEventListener("click", refreshPortSelectors);
+
+    el.outputSelect.addEventListener("change", () => {
+      state.outputId = el.outputSelect.value;
+      refreshPortSelectors();
+    });
+
+    el.inputSelect.addEventListener("change", () => {
+      state.inputId = el.inputSelect.value;
+      state.inputSelectionTouched = true;
+      attachInputMonitor();
+    });
+
+    el.writeAllBtn.addEventListener("click", writeAll);
+
+    el.board.addEventListener("change", (event) => {
+      const control = event.target.closest("[data-field]");
+      if (!control) return;
+
+      const index = Number(control.dataset.index);
+      const knob = state.knobs[index];
+      if (!knob) return;
+
+      state.selectedIndex = index;
+      if (control.dataset.field === "type") {
+        knob.type = control.value;
+      } else if (control.dataset.field === "channel") {
+        knob.channel = clampInt(control.value, 1, 16, 1);
+      } else if (control.dataset.field === "number") {
+        normalizeNumberInput(control, knob, false);
+      }
+    });
+
+    el.board.addEventListener("input", (event) => {
+      const control = event.target.closest('[data-field="number"]');
+      if (!control) return;
+
+      const index = Number(control.dataset.index);
+      const knob = state.knobs[index];
+      if (!knob) return;
+
+      state.selectedIndex = index;
+      normalizeNumberInput(control, knob, true);
+    });
+
+    el.board.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+
+      const index = Number(button.dataset.index);
+      if (!state.knobs[index]) return;
+
+      if (button.dataset.action === "load") {
+        if (state.readMode && state.readMode.kind === "single" && state.readMode.index === index) {
+          stopReadMode("Load stopped.");
+        } else if (!state.readMode) {
+          startReadKnob(index);
+        }
+      } else if (button.dataset.action === "write") {
+        writeKnobFromCard(index);
+      }
+    });
+
+    el.readSequenceBtn.addEventListener("click", () => {
+      if (state.readMode && state.readMode.kind === "sequence") {
+        stopReadMode("Load stopped.");
+      } else if (!state.readMode) {
+        startReadSequence();
+      }
+    });
+
+    el.exportJsonBtn.addEventListener("click", exportJson);
+    el.importJsonInput.addEventListener("change", () => importJson(el.importJsonInput.files[0]));
+
+    el.clearLogBtn.addEventListener("click", () => {
+      state.consoleLines = [];
+      renderConsole();
+    });
+  }
+
+  function init() {
+    renderAll();
+    setMidiReadout(state.midiReadout);
+    updateReadStatus();
+    bindEvents();
+
+    if (!midiAccessSupported()) {
+      el.supportMessage.hidden = false;
+      el.supportMessage.textContent = "This browser does not support Web MIDI. Open it in Chrome or Edge.";
+      setStatus("bad", "No Web MIDI");
+    } else if (!window.isSecureContext) {
+      el.supportMessage.hidden = false;
+      el.supportMessage.textContent = "Web MIDI requires a secure context. If file:// does not work, open it via a local server or HTTPS.";
+      setStatus("bad", "Not connected");
+    } else {
+      setStatus("bad", "Not connected");
+    }
+
+    renderConsole();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
