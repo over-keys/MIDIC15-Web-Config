@@ -26,10 +26,13 @@ If Web MIDI does not work from `file://`, serve the folder with a local web serv
    - `Channel`: MIDI channel, 1 to 16
    - `Mode`: `CC` (Control Change), `ON` (Note On), or `OFF` (Note Off)
    - `Number`: CC or note number, 0 to 127
-6. Use `Read` on a knob to read one physical knob assignment into the app. When prompted, move the physical knob slightly.
-7. Use `Write` on a knob to send only that knob to the device.
-8. Use `Read All` to read all 15 knobs in order. When prompted, move each physical knob slightly.
-9. Use `Write All` to send all 15 knobs to the device.
+
+Use the action buttons as needed:
+
+- `Read`: read one physical knob assignment into the app. When prompted, move that physical knob slightly.
+- `Write`: send one knob assignment to the device.
+- `Read All`: read all 15 knobs in order. When prompted, move each physical knob slightly.
+- `Write All`: send all 15 knobs to the device.
 
 ## Import And Export
 
