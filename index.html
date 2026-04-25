@@ -2024,6 +2024,12 @@
     control.value = String(parsed);
   }
 
+  function selectNumberInput(control) {
+    window.setTimeout(() => {
+      control.select();
+    }, 0);
+  }
+
   function statusBaseForType(type) {
     if (type === "noteon") return 0x90;
     if (type === "noteoff") return 0x80;
@@ -2267,7 +2273,20 @@
       normalizeNumberInput(control, knob, true);
     });
 
+    el.board.addEventListener("focusin", (event) => {
+      const control = event.target.closest('[data-field="number"]');
+      if (!control) return;
+
+      selectNumberInput(control);
+    });
+
     el.board.addEventListener("click", (event) => {
+      const numberInput = event.target.closest('[data-field="number"]');
+      if (numberInput) {
+        selectNumberInput(numberInput);
+        return;
+      }
+
       const button = event.target.closest("[data-action]");
       if (!button) return;
 
