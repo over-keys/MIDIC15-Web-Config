@@ -26,22 +26,26 @@ If Web MIDI does not work from `file://`, serve the folder with a local web serv
    - `Channel`: MIDI channel, 1 to 16
    - `Mode`: `CC`, `ON`, or `OFF`
    - `Number`: CC or note number, 0 to 127
-6. Use `Write` on a knob to send only that knob.
-7. Use `Write All` to send all 15 knobs.
+6. Use `Read` on a knob to read one physical knob assignment into the app.
+7. Use `Write` on a knob to send only that knob to the device.
+8. Use `Read All` to read all 15 knobs in order.
+9. Use `Write All` to send all 15 knobs to the device.
 
-## Loading From The Device
+## Reading From The Device
 
-Use `Load` on a knob to read one physical knob assignment.
+Use `Read` on a knob to read one physical knob assignment into the app.
 
-Use `Load All` to read all 15 knobs in order. When prompted, move each physical knob slightly.
+Use `Read All` to read all 15 knobs in order. When prompted, move each physical knob slightly.
 
 The latest received MIDI message is shown above the console.
 
+`Read` / `Read All` communicate with the MIDI device. `Import` / `Export` are only for JSON files.
+
 ## Import And Export
 
-Use `Export` to save the current configuration as JSON.
+Use `Export` to save the current app configuration as JSON.
 
-Use `Import` to load a JSON configuration back into the app.
+Use `Import` to read a JSON configuration back into the app.
 
 The current JSON format uses this order for each knob:
 
