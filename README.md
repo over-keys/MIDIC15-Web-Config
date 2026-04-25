@@ -24,7 +24,7 @@ If Web MIDI does not work from `file://`, serve the folder with a local web serv
 4. Confirm that the MIDI output and input are selected.
 5. Edit each knob directly on the left panel:
    - `Channel`: MIDI channel, 1 to 16
-   - `Mode`: `CC`, `ON` (Note On), or `OFF` (Note Off)
+   - `Mode`: `CC` (Control Change), `ON` (Note On), or `OFF` (Note Off)
    - `Number`: CC or note number, 0 to 127
 6. Use `Read` on a knob to read one physical knob assignment into the app.
 7. Use `Write` on a knob to send only that knob to the device.
