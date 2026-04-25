@@ -2089,7 +2089,7 @@
   function serializeConfig() {
     return {
       app: "MIDIC15 Web Config",
-      version: 2,
+      version: 3,
       knobs: state.knobs.map((knob) => ({
         channel: clampInt(knob.channel, 1, 16, 1),
         mode: shortTypeValue(knob.type),
@@ -2097,11 +2097,6 @@
         label: knob.label,
         hardware: knob.hardware,
       })),
-      options: {
-        delayMs: WRITE_DELAY_MS,
-        sendResetMarkers: SEND_RESET_MARKERS,
-        sendPreamble: SEND_PREAMBLE,
-      },
     };
   }
 
