@@ -2,31 +2,27 @@
 
 MIDIC15 Web Config is an unofficial browser-based editor for configuring the 15 MIDI knobs on a MIDIC15 device.
 
-The app runs as a static web page, so it can be published directly with GitHub Pages.
-
 ## Open The App
 
-For GitHub Pages, publish this repository and open:
+Open the published app here:
 
 ```text
-https://<your-github-user>.github.io/<repository-name>/
+https://over-keys.github.io/MIDIC15-Web-Config/
 ```
 
-For local use, open `index.html` in a Web MIDI compatible browser.
+Use Chrome or Microsoft Edge, because the app uses Web MIDI.
+
+## Local Use
+
+You can also open `index.html` locally in a Web MIDI compatible browser.
 
 If Web MIDI does not work from `file://`, serve the folder with a local web server or publish it over HTTPS.
-
-## Browser Requirements
-
-Use a browser with Web MIDI support, such as Chrome or Microsoft Edge.
-
-The browser will ask for MIDI access. Click `MIDI` in the app, then allow MIDI access when prompted.
 
 ## Basic Workflow
 
 1. Connect the MIDIC15 device.
 2. Open the app.
-3. Click `MIDI`.
+3. Click `MIDI` and allow MIDI access when the browser asks.
 4. Confirm that the MIDI output and input are selected.
 5. Edit each knob directly on the left panel:
    - `Channel`: MIDI channel, 1 to 16
@@ -64,6 +60,8 @@ The current JSON format uses this order for each knob:
 `mode` can be `CC`, `ON`, or `OFF`.
 
 ## Notes
+
+This is an unofficial tool and is not affiliated with the MIDIC15 manufacturer.
 
 Close other MIDI apps, such as a DAW, if the browser cannot access the device.
 
