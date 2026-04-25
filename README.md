@@ -64,3 +64,7 @@ This is an unofficial tool and is not affiliated with the MIDIC15 manufacturer.
 Close other MIDI apps, such as a DAW, if the browser cannot access the device.
 
 If GitHub Pages does not show the latest version immediately, wait a moment or hard-refresh the page.
+
+## License
+
+This project is released under the MIT License.
