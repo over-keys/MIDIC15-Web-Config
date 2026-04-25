@@ -1284,6 +1284,299 @@
     font-size:clamp(.70rem, 1.38vh, .76rem);
   }
 
+
+  /* Large-screen refinement: keep the same balanced two-panel layout, but scale it up gracefully. */
+  :root{
+    --shadow:0 6px 16px rgba(15,23,42,.045);
+  }
+
+  button.primary{
+    box-shadow:none;
+  }
+
+  .panel,
+  .board,
+  .knob-card,
+  .status-pill,
+  .midi-connect-grid,
+  .midi-readout-panel{
+    box-shadow:none;
+  }
+
+  .board{
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 6px 16px rgba(15,23,42,.045);
+  }
+
+  .knob-card:hover{
+    box-shadow:0 4px 10px rgba(15,23,42,.055);
+  }
+
+  .knob-card.reading{
+    border-color:var(--primary);
+    background:linear-gradient(180deg, #f7fbff 0%, var(--primary-soft) 100%);
+    box-shadow:0 0 0 3px rgba(37,99,235,.12);
+  }
+
+  @media (min-width: 1400px) and (min-height: 780px){
+    .app{
+      width:min(1660px, 100%);
+      padding:24px;
+    }
+
+    .workbench{
+      grid-template-columns:minmax(900px, 1fr) minmax(500px, 540px);
+      gap:18px;
+    }
+
+    .device-panel{
+      padding:18px;
+    }
+
+    .inspector-panel{
+      padding:18px;
+      gap:14px;
+    }
+
+    .board{
+      width:min(1040px, 100%);
+      padding:18px;
+      gap:7px;
+      border-radius:24px;
+    }
+
+    .knob-card{
+      border-radius:17px;
+      padding:clamp(7px, 1vh, 10px);
+      row-gap:clamp(5px, .8vh, 8px);
+    }
+
+    .knob-toprow{
+      column-gap:10px;
+    }
+
+    .knob-toprow > button{
+      min-width:58px;
+      max-width:68px;
+      min-height:30px;
+      padding:3px 8px;
+      font-size:.92rem;
+      border-radius:14px;
+    }
+
+    .knob-toprow .knob-face{
+      width:54px;
+      height:54px;
+    }
+
+    .knob-face::before{
+      font-size:1.14rem;
+    }
+
+    .knob-face::after{
+      width:4px;
+      height:8px;
+      top:4px;
+    }
+
+    .knob-fields{
+      gap:8px;
+    }
+
+    .knob-field{
+      gap:4px;
+    }
+
+    .knob-field label{
+      font-size:.74rem;
+    }
+
+    .knob-field select,
+    .knob-field input{
+      height:35px;
+      border-radius:13px;
+      font-size:1rem;
+      padding:3px 6px;
+    }
+
+    .status-pill{
+      width:36px;
+      height:36px;
+    }
+
+    .dot{
+      width:.74rem;
+      height:.74rem;
+    }
+
+    .midi-status-row{
+      grid-template-columns:36px minmax(0, 1fr) auto;
+      gap:10px;
+    }
+
+    .compact-btn{
+      min-height:36px;
+      padding:.44rem .62rem;
+      font-size:.92rem;
+    }
+
+    .midi-connect{
+      gap:12px;
+    }
+
+    .midi-connect-grid{
+      gap:10px;
+    }
+
+    .field.compact label{
+      font-size:.72rem;
+    }
+
+    .midi-connect .field.compact select{
+      height:42px;
+      border-radius:13px;
+      font-size:1rem;
+      padding:.24rem .48rem;
+    }
+
+    .command-grid,
+    .file-actions{
+      gap:12px;
+    }
+
+    .command-grid button,
+    .file-actions button,
+    .file-actions .file-button{
+      min-height:58px;
+      border-radius:22px;
+      font-size:1.18rem;
+      padding:.62rem .9rem;
+    }
+
+    .midi-readout-panel{
+      min-height:70px;
+      border-radius:18px;
+      padding:14px 18px;
+      font-size:1.05rem;
+    }
+
+    .log-panel{
+      border-radius:18px;
+      padding:12px 16px 16px;
+      gap:8px;
+    }
+
+    .log-title{
+      font-size:1rem;
+    }
+
+    .log-head .ghost{
+      font-size:.92rem;
+    }
+
+    .log{
+      border-radius:14px;
+      padding:14px;
+      font-size:.90rem;
+      line-height:1.42;
+    }
+  }
+
+  @media (min-width: 1700px) and (min-height: 900px){
+    .app{
+      width:min(1780px, 100%);
+      padding:28px;
+    }
+
+    .workbench{
+      grid-template-columns:minmax(980px, 1fr) minmax(540px, 580px);
+      gap:20px;
+    }
+
+    .board{
+      width:min(1120px, 100%);
+      padding:20px;
+      gap:8px;
+    }
+
+    .knob-toprow .knob-face{
+      width:58px;
+      height:58px;
+    }
+
+    .knob-toprow > button{
+      min-width:62px;
+      max-width:72px;
+      min-height:32px;
+      font-size:.96rem;
+    }
+
+    .knob-field label{
+      font-size:.78rem;
+    }
+
+    .knob-field select,
+    .knob-field input{
+      height:38px;
+      font-size:1.08rem;
+    }
+
+    .command-grid button,
+    .file-actions button,
+    .file-actions .file-button{
+      min-height:62px;
+      font-size:1.24rem;
+    }
+  }
+
+
+  /* Center the content cluster inside each knob card instead of pinning top and bottom apart. */
+  .knob-card{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:stretch;
+    gap:clamp(5px, .8vh, 8px);
+  }
+
+  .knob-meta,
+  .knob-toprow,
+  .knob-fields{
+    flex:0 0 auto;
+  }
+
+  .knob-meta{
+    align-self:flex-start;
+    margin-bottom:0;
+  }
+
+  .knob-toprow{
+    width:100%;
+    margin:0;
+  }
+
+  .knob-fields{
+    width:100%;
+    align-self:stretch;
+  }
+
+  @media (min-width: 1400px) and (min-height: 780px){
+    .knob-card{
+      justify-content:center;
+      gap:8px;
+    }
+
+    .knob-meta{
+      margin-bottom:2px;
+    }
+  }
+
+  @media (min-width: 1700px) and (min-height: 900px){
+    .knob-card{
+      justify-content:center;
+      gap:9px;
+    }
+  }
+
 </style>
 </head>
 <body>
