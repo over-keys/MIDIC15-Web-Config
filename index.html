@@ -421,10 +421,6 @@
     box-shadow:0 0 0 4px rgba(37,99,235,.10), 0 10px 20px rgba(15,23,42,.10);
   }
 
-  .knob-meta{
-    display:none;
-  }
-
   .knob-face{
     border-radius:999px;
     background:radial-gradient(circle at 50% 50%, #262626 0 51%, transparent 52%),
@@ -499,10 +495,6 @@
   .knob-field input{
     font-family:var(--mono);
     text-align:center;
-  }
-
-  .knob-actions button{
-    border-radius:9px;
   }
 
   .control-section{
@@ -718,11 +710,6 @@
       font-size:.78rem;
     }
 
-    .knob-actions button{
-      min-height:20px;
-      padding:2px 5px;
-      font-size:.72rem;
-    }
   }
 
   @media (max-width: 760px){
@@ -797,14 +784,44 @@
       padding:2px 3px;
     }
 
-    .knob-actions{
-      gap:4px;
+  }
+
+  @media (max-width: 900px){
+    .app{
+      height:auto;
+      min-height:100vh;
+      min-height:100dvh;
+      overflow:visible;
     }
 
-    .knob-actions button{
-      min-height:20px;
-      padding:2px 4px;
-      font-size:.68rem;
+    .layout{
+      overflow:visible;
+    }
+
+    .workbench{
+      grid-template-columns:1fr;
+      align-items:start;
+      height:auto;
+    }
+
+    .device-panel{
+      height:min(760px, calc(100dvh - 16px));
+      min-height:620px;
+    }
+
+    .inspector-panel{
+      position:static;
+      height:auto;
+      max-height:none;
+      overflow:visible;
+    }
+
+    .log-panel{
+      min-height:220px;
+    }
+
+    .log{
+      min-height:170px;
     }
   }
 
@@ -855,13 +872,6 @@
       min-height:120px;
     }
 
-    .knob-fields{
-      grid-template-columns:minmax(0, .72fr) minmax(0, 1.28fr);
-    }
-
-    .knob-field:nth-child(3){
-      grid-column:1 / -1;
-    }
   }
 
   @media (max-width: 480px){
@@ -936,10 +946,6 @@
     font-size:clamp(.78rem, 1.55vh, .86rem);
   }
 
-  .knob-actions button{
-    font-size:clamp(.72rem, 1.45vh, .78rem);
-  }
-
   .knob-face{
     position:relative;
     left:auto;
@@ -949,65 +955,8 @@
     height:clamp(32px, 6.2vh, 44px);
   }
 
-  .knob-actions button{
-    min-height:0;
-    height:auto;
-  }
-
-  @media (max-width: 620px){
-    .knob-fields{
-      grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.18fr);
-    }
-
-    .knob-field:nth-child(3){
-      grid-column:auto;
-    }
-  }
-
-  .knob-actions button{
-    justify-self:auto;
-  }
-
-  .knob-actions{
-    justify-self:start;
-  }
-
   .knob-card{
     column-gap:clamp(6px, 1vh, 9px);
-  }
-
-  .knob-actions{
-    align-self:center;
-  }
-
-  .knob-actions{
-    grid-column:1 / -1;
-    grid-row:1;
-    display:grid;
-    grid-template-columns:auto clamp(32px, 6.2vh, 44px) auto;
-    grid-template-rows:1fr;
-    justify-content:center;
-    justify-items:center;
-    align-items:center;
-    gap:clamp(6px, 1vh, 9px);
-    min-width:0;
-    z-index:2;
-  }
-
-  .knob-actions button:first-child{
-    grid-column:1;
-    justify-self:end;
-  }
-
-  .knob-actions button:last-child{
-    grid-column:3;
-    justify-self:start;
-  }
-
-  .knob-actions button{
-    width:auto;
-    min-width:clamp(40px, 6.8vh, 52px);
-    padding:2px 7px;
   }
 
   .knob-face{
@@ -1016,21 +965,6 @@
     justify-self:center;
     align-self:center;
     z-index:1;
-  }
-
-  @media (max-width: 620px){
-    .knob-fields{
-      grid-template-columns:repeat(3, minmax(0, 1fr));
-    }
-
-    .knob-field:nth-child(3){
-      grid-column:auto;
-    }
-  }
-
-  .knob-meta{
-    grid-column:1;
-    grid-row:1;
   }
 
   .knob-toprow > button:first-child{
@@ -1056,16 +990,6 @@
   .knob-field select,
   .knob-field input{
     width:100%;
-  }
-
-  @media (max-width: 620px){
-    .knob-fields{
-      grid-template-columns:repeat(3, minmax(0, 1fr));
-    }
-
-    .knob-field:nth-child(3){
-      grid-column:auto;
-    }
   }
 
   .knob-card{
@@ -1125,11 +1049,11 @@
   }
 
   .knob-toprow > button{
-    min-width:clamp(38px, 6vh, 49px);
-    max-width:55px;
-    min-height:clamp(18px, 3.1vh, 23px);
-    padding:2px 6px;
-    font-size:clamp(.70rem, 1.38vh, .76rem);
+    min-width:clamp(42px, 6.3vh, 53px);
+    max-width:58px;
+    min-height:clamp(20px, 3.25vh, 25px);
+    padding:3px 7px;
+    font-size:clamp(.73rem, 1.45vh, .80rem);
   }
 
   :root{
@@ -1382,15 +1306,9 @@
     gap:clamp(5px, .8vh, 8px);
   }
 
-  .knob-meta,
   .knob-toprow,
   .knob-fields{
     flex:0 0 auto;
-  }
-
-  .knob-meta{
-    align-self:flex-start;
-    margin-bottom:0;
   }
 
   .knob-toprow{
@@ -1409,9 +1327,6 @@
       gap:8px;
     }
 
-    .knob-meta{
-      margin-bottom:2px;
-    }
   }
 
   @media (min-width: 1700px) and (min-height: 900px){
@@ -1779,14 +1694,6 @@
     return { text: `Other ${hexMessage(bytes)}`, type: "unknown" };
   }
 
-
-  function readableMidi(decoded) {
-    if (decoded.type === "cc") return `Ch ${decoded.channel} / CC ${decoded.number}`;
-    if (decoded.type === "noteon") return `Ch ${decoded.channel} / ON ${decoded.number}`;
-    if (decoded.type === "noteoff") return `Ch ${decoded.channel} / OFF ${decoded.number}`;
-    return decoded.text;
-  }
-
   function compactMidi(decoded) {
     if (decoded.type === "cc") return `Ch ${decoded.channel} / CC ${decoded.number}`;
     if (decoded.type === "noteon") return `Ch ${decoded.channel} / ON ${decoded.number}`;
@@ -1976,15 +1883,6 @@
       card.style.gridRow = String(knob.row);
       card.dataset.index = String(index);
 
-      const meta = document.createElement("div");
-      meta.className = "knob-meta";
-
-      const id = document.createElement("span");
-      id.className = "badge";
-      id.textContent = `No. ${knob.label}`;
-
-      meta.append(id);
-
       const face = document.createElement("div");
       face.className = "knob-face";
       face.dataset.label = String(knob.label);
@@ -2053,7 +1951,7 @@
       writeButton.textContent = "Write";
 
       topRow.append(loadButton, face, writeButton);
-      card.append(meta, topRow, fields);
+      card.append(topRow, fields);
 
       el.board.appendChild(card);
     });
@@ -2063,12 +1961,6 @@
 
   function renderAll() {
     renderBoard();
-  }
-
-  function typeLabel(type) {
-    if (type === "noteon") return "Note On";
-    if (type === "noteoff") return "Note Off";
-    return "CC";
   }
 
   function shortTypeValue(type) {
