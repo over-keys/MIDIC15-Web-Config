@@ -853,6 +853,25 @@
       grid-template-columns:1fr 1fr;
     }
   }
+
+  /* Keep knob typography stable across horizontal breakpoints. */
+  .knob-face::before{
+    font-size:clamp(.88rem, 1.95vh, 1.08rem);
+  }
+
+  .knob-field label{
+    font-size:clamp(.56rem, 1.1vh, .60rem);
+  }
+
+  .knob-field select,
+  .knob-field input{
+    font-size:clamp(.78rem, 1.55vh, .86rem);
+  }
+
+  .knob-actions button{
+    font-size:clamp(.72rem, 1.45vh, .78rem);
+  }
+
 </style>
 </head>
 <body>
@@ -1078,7 +1097,7 @@
 
   function isLikelyMIDIC15(port) {
     const name = `${port.name || ""} ${port.manufacturer || ""}`.toLowerCase();
-    return name.includes("4ac2cc15") || name.includes("midic15") || name.includes("midi-c15") || name.includes("4ac20c") || name.includes("midi_usb");
+    return /4ac[0-9a-f]cc15/i.test(name) || name.includes("midic15") || name.includes("midi-c15") || name.includes("4ac20c") || name.includes("midi_usb");
   }
 
   function getOutputs() {
@@ -1684,12 +1703,32 @@
       throw new Error("Invalid JSON format.");
     }
 
+    const byHardware = new Map();
+    const byLabel = new Map();
+
+    data.knobs.forEach((item, index) => {
+      if (!item) return;
+
+      const hardware = Number(item.hardware);
+      const label = Number(item.label);
+
+      if (Number.isFinite(hardware)) {
+        byHardware.set(hardware, item);
+      }
+
+      if (Number.isFinite(label)) {
+        byLabel.set(label, item);
+      } else if (!Number.isFinite(hardware)) {
+        byLabel.set(index + 1, item);
+      }
+    });
+
     state.knobs.forEach((knob, index) => {
-      const incoming = data.knobs[index];
+      const incoming = byHardware.get(knob.hardware) || byLabel.get(knob.label) || data.knobs[index];
       if (!incoming) return;
 
       knob.channel = clampInt(incoming.channel, 1, 16, 1);
-      knob.type = typeFromMode(incoming.mode);
+      knob.type = typeFromMode(incoming.mode ?? incoming.type);
       knob.number = clampInt(incoming.number, 0, 127, 0);
     });
 
