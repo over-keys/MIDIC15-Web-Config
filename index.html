@@ -626,11 +626,6 @@
     white-space:nowrap;
   }
 
-  .console-current .console-message{
-    color:#fff;
-    font-weight:850;
-  }
-
   .toast{
     position:fixed;
     left:50%;
@@ -1335,6 +1330,56 @@
       gap:9px;
     }
   }
+
+  /*
+    Limit visible insertion carets to intentional text areas:
+    Number fields, the live MIDI readout, and the console.
+  */
+  *, *::before, *::after{
+    caret-color:transparent;
+  }
+
+  body{
+    user-select:none;
+  }
+
+  input, select, button, .file-button{
+    caret-color:transparent;
+    user-select:none;
+  }
+
+  input[data-field="number"],
+  .midi-readout-panel,
+  .log,
+  .log *{
+    caret-color:auto;
+    user-select:text;
+  }
+
+
+  /* Slightly enlarge console text while keeping each message on one line. */
+  .log{
+    font-size:clamp(.78rem, 1.58vh, .92rem);
+  }
+
+  .console-message{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  @media (min-width: 1400px) and (min-height: 780px){
+    .log{
+      font-size:1rem;
+    }
+  }
+
+  @media (min-width: 1700px) and (min-height: 900px){
+    .log{
+      font-size:1.05rem;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -1441,7 +1486,6 @@
     readMode: null,
     readCooldownUntil: 0,
     midiReadout: "Waiting for MIDI",
-    consoleStatus: "Ready: click MIDI",
     consoleLines: [],
     knobs: visualLayout.map((item, index) => ({
       hardware: item.hardware,
@@ -1499,20 +1543,16 @@
   function renderConsole() {
     el.logBox.replaceChildren();
 
-    if (state.consoleStatus) {
-      el.logBox.appendChild(createConsoleLine("", state.consoleStatus, true));
-    }
-
     state.consoleLines.forEach((entry) => {
-      el.logBox.appendChild(createConsoleLine(entry.time, entry.message, false));
+      el.logBox.appendChild(createConsoleLine(entry.time, entry.message));
     });
 
     el.logBox.scrollTop = el.logBox.scrollHeight;
   }
 
-  function createConsoleLine(time, message, isCurrent) {
+  function createConsoleLine(time, message) {
     const line = document.createElement("div");
-    line.className = `console-line${isCurrent ? " console-current" : ""}`;
+    line.className = "console-line";
 
     if (time) {
       const timeSpan = document.createElement("span");
@@ -1532,11 +1572,6 @@
   function setMidiReadout(message) {
     state.midiReadout = message;
     el.midiReadout.textContent = state.midiReadout;
-  }
-
-  function setConsoleStatus(message) {
-    state.consoleStatus = message;
-    renderConsole();
   }
 
   function log(message) {
@@ -1711,7 +1746,6 @@
     el.readSequenceBtn.classList.add("soft");
 
     if (!state.readMode) {
-      setConsoleStatus(state.midiAccess ? "Idle" : "Ready: click MIDI");
       syncKnobActionButtons();
       return;
     }
@@ -1719,8 +1753,6 @@
     const knob = state.knobs[state.readMode.index];
     const isSequence = state.readMode.kind === "sequence";
     const prefix = isSequence ? `Read ${state.readMode.index + 1}/15` : `Read ${knob.label}`;
-    setConsoleStatus(`${prefix}: turn knob`);
-
     if (isSequence) {
       el.readSequenceBtn.textContent = "Stop";
       el.readSequenceBtn.classList.remove("soft");
@@ -2047,8 +2079,6 @@
     const delay = WRITE_DELAY_MS;
     const messages = protocolMessagesForKnob(knob);
 
-    setConsoleStatus(`Write ${knob.label}: ${shortWriteLabel(knob)}`);
-
     for (const bytes of messages) {
       await sendBytes(output, bytes);
       await wait(delay);
@@ -2079,7 +2109,6 @@
         await writeKnob(i);
         await wait(40);
       }
-      setConsoleStatus("Write all done");
       log("Write all: done");
       showToast("All 15 knobs written.");
     } catch (error) {
@@ -2104,7 +2133,6 @@
       el.requestBtn.textContent = "MIDI enabled";
       el.requestBtn.disabled = true;
       refreshPortSelectors();
-      setConsoleStatus("MIDI ready");
       showToast("MIDI access granted.");
     } catch (error) {
       el.supportMessage.hidden = false;
