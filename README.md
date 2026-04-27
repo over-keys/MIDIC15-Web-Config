@@ -1,6 +1,6 @@
 # MIDIC15 Web Config
 
-MIDIC15 Web Config is an unofficial browser-based editor for configuring the 15 MIDI knobs on a [MIDIC15](https://null39.work/asset/midi%E8%AF%B4%E6%98%8E/Device/MIDIC15.html) 15-knob MIDI controller.
+MIDIC15 Web Config is an unofficial browser-based editor for configuring the 15 knobs on a [MIDIC15 MIDI controller](https://null39.work/asset/midi%E8%AF%B4%E6%98%8E/Device/MIDIC15.html).
 
 ## Open The App
 
