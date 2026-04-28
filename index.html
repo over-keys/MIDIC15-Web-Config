@@ -876,7 +876,7 @@
     }
 
     .midi-status-row{
-      grid-template-columns:24px minmax(0, 1fr) auto auto;
+      grid-template-columns:24px minmax(0, 1fr) auto;
       gap:6px;
     }
 
@@ -1356,6 +1356,11 @@
     user-select:text;
   }
 
+  .midi-connect .warning,
+  .toast{
+    user-select:text;
+  }
+
 
   /* Slightly enlarge console text while keeping each message on one line. */
   .log{
@@ -1381,59 +1386,6 @@
   }
 
 
-  /* Slightly enlarge Channel / Mode / Number text. */
-  .knob-field label{
-    font-size:clamp(.62rem, 1.22vh, .68rem);
-  }
-
-  .knob-field select,
-  .knob-field input{
-    font-size:clamp(.84rem, 1.7vh, .94rem);
-  }
-
-  @media (min-width: 1400px) and (min-height: 780px){
-    .knob-field label{
-      font-size:.82rem;
-    }
-
-    .knob-field select,
-    .knob-field input{
-      font-size:1.08rem;
-    }
-  }
-
-  @media (min-width: 1700px) and (min-height: 900px){
-    .knob-field label{
-      font-size:.86rem;
-    }
-
-    .knob-field select,
-    .knob-field input{
-      font-size:1.16rem;
-    }
-  }
-
-
-  /* Enlarge Channel / Mode / Number input and select text one more step. */
-  .knob-field select,
-  .knob-field input{
-    font-size:clamp(.92rem, 1.85vh, 1.04rem);
-  }
-
-  @media (min-width: 1400px) and (min-height: 780px){
-    .knob-field select,
-    .knob-field input{
-      font-size:1.18rem;
-    }
-  }
-
-  @media (min-width: 1700px) and (min-height: 900px){
-    .knob-field select,
-    .knob-field input{
-      font-size:1.26rem;
-    }
-  }
-
 
   /* Align Channel / Mode / Number labels and values exactly. */
   .knob-fields{
@@ -1453,6 +1405,7 @@
     align-items:center;
     justify-content:center;
     height:1em;
+    font-size:clamp(.62rem, 1.22vh, .68rem);
     line-height:1;
     white-space:nowrap;
   }
@@ -1482,6 +1435,10 @@
       gap:4px;
     }
 
+    .knob-field label{
+      font-size:.82rem;
+    }
+
     .knob-field select,
     .knob-field input{
       height:37px;
@@ -1491,6 +1448,10 @@
   }
 
   @media (min-width: 1700px) and (min-height: 900px){
+    .knob-field label{
+      font-size:.86rem;
+    }
+
     .knob-field select,
     .knob-field input{
       height:40px;
@@ -1576,6 +1537,7 @@
   const WRITE_DELAY_MS = 25;
   const SEND_RESET_MARKERS = true;
   const SEND_PREAMBLE = true;
+  let toastTimer = null;
 
   const visualLayout = [
     { hardware: 2,  row: 1, col: 1 },
@@ -1603,6 +1565,7 @@
     selectedIndex: 0,
     readMode: null,
     readCooldownUntil: 0,
+    isWriting: false,
     midiReadout: "Waiting for MIDI",
     consoleLines: [],
     knobs: visualLayout.map((item, index) => ({
@@ -1652,8 +1615,8 @@
   function showToast(message) {
     el.toast.textContent = message;
     el.toast.classList.add("show");
-    clearTimeout(showToast._timer);
-    showToast._timer = setTimeout(() => {
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
       el.toast.classList.remove("show");
     }, 2400);
   }
@@ -1862,19 +1825,22 @@
     el.readSequenceBtn.textContent = "Read All";
     el.readSequenceBtn.classList.remove("danger");
     el.readSequenceBtn.classList.add("soft");
+    el.readSequenceBtn.disabled = state.isWriting;
+    el.writeAllBtn.disabled = state.isWriting || Boolean(state.readMode);
 
     if (!state.readMode) {
       syncKnobActionButtons();
       return;
     }
 
-    const knob = state.knobs[state.readMode.index];
     const isSequence = state.readMode.kind === "sequence";
-    const prefix = isSequence ? `Read ${state.readMode.index + 1}/15` : `Read ${knob.label}`;
     if (isSequence) {
-      el.readSequenceBtn.textContent = "Stop";
+      el.readSequenceBtn.textContent = `Stop ${state.readMode.index + 1}/${state.knobs.length}`;
+      el.readSequenceBtn.disabled = false;
       el.readSequenceBtn.classList.remove("soft");
       el.readSequenceBtn.classList.add("danger");
+    } else {
+      el.readSequenceBtn.disabled = true;
     }
 
     syncKnobActionButtons();
@@ -1902,6 +1868,9 @@
 
   function startReadKnob(index) {
     try {
+      if (state.isWriting) {
+        throw new Error("Wait until writing is complete.");
+      }
       requireInputMonitor();
       state.selectedIndex = index;
       state.readMode = { kind: "single", index };
@@ -1916,6 +1885,9 @@
 
   function startReadSequence() {
     try {
+      if (state.isWriting) {
+        throw new Error("Wait until writing is complete.");
+      }
       requireInputMonitor();
       state.selectedIndex = 0;
       state.readMode = { kind: "sequence", index: 0 };
@@ -2015,8 +1987,11 @@
 
       if (action === "load") {
         button.textContent = isActiveSingle ? "Stop" : "Read";
+        button.disabled = state.isWriting || Boolean(state.readMode && !isActiveSingle);
         button.classList.toggle("danger", Boolean(isActiveSingle));
         button.classList.toggle("soft", !isActiveSingle);
+      } else if (action === "write") {
+        button.disabled = state.isWriting || Boolean(state.readMode);
       }
     });
   }
@@ -2161,6 +2136,8 @@
     const messages = [];
 
     if (SEND_RESET_MARKERS) {
+      // MIDIC15 uses this device-specific reset marker around each knob mapping.
+      // Keep the selected MIDI output restricted to the target device.
       messages.push([0xff]);
     }
 
@@ -2210,27 +2187,59 @@
   }
 
   async function writeKnobFromCard(index) {
+    if (state.readMode) {
+      showToast("Stop Read before writing.");
+      return;
+    }
+    if (state.isWriting) {
+      showToast("Write is already in progress.");
+      return;
+    }
+
     try {
+      state.isWriting = true;
       state.selectedIndex = index;
+      renderAll();
+      updateReadStatus();
+
       await writeKnob(index);
       showToast(`Knob ${state.knobs[index].label} written.`);
       log(`Write ${state.knobs[index].label}: ${shortWriteLabel(state.knobs[index])}`);
-      renderAll();
     } catch (error) {
       showToast(error.message || String(error));
       log(`ERROR: ${error.message || String(error)}`);
+    } finally {
+      state.isWriting = false;
+      renderAll();
+      updateReadStatus();
     }
   }
 
   async function writeAll() {
+    if (state.readMode) {
+      showToast("Stop Read before writing.");
+      return;
+    }
+    if (state.isWriting) {
+      showToast("Write is already in progress.");
+      return;
+    }
+
     try {
       await ensureOutput();
 
       const ok = window.confirm("Write all 15 knobs to the device? Make sure other MIDI apps such as your DAW are closed.");
       if (!ok) return;
 
+      state.isWriting = true;
+      renderAll();
+      updateReadStatus();
+
       for (let i = 0; i < state.knobs.length; i += 1) {
+        state.selectedIndex = i;
+        renderAll();
         await writeKnob(i);
+        log(`Write ${state.knobs[i].label}: ${shortWriteLabel(state.knobs[i])}`);
         await wait(40);
       }
       log("Write all: done");
@@ -2238,10 +2247,21 @@
     } catch (error) {
       showToast(error.message || String(error));
       log(`ERROR: ${error.message || String(error)}`);
+    } finally {
+      state.isWriting = false;
+      renderAll();
+      updateReadStatus();
     }
   }
 
   async function requestMidiAccess() {
+    if (!window.isSecureContext) {
+      el.supportMessage.hidden = false;
+      el.supportMessage.textContent = "Web MIDI requires a secure context. If file:// does not work, open it via a local server or HTTPS.";
+      setStatus("bad", "Not connected");
+      return;
+    }
+
     if (!midiAccessSupported()) {
       el.supportMessage.hidden = false;
       el.supportMessage.textContent = "This browser does not support Web MIDI. Open it in Chrome or Edge.";
