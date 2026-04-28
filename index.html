@@ -1835,7 +1835,7 @@
 
     const isSequence = state.readMode.kind === "sequence";
     if (isSequence) {
-      el.readSequenceBtn.textContent = `Stop ${state.readMode.index + 1}/${state.knobs.length}`;
+      el.readSequenceBtn.textContent = "Stop";
       el.readSequenceBtn.disabled = false;
       el.readSequenceBtn.classList.remove("soft");
       el.readSequenceBtn.classList.add("danger");
