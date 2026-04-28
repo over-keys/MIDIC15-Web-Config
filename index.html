@@ -876,13 +876,13 @@
     grid-column:auto;
   }
 
-  .knob-card.selected:not(.reading){
+  .knob-card.selected:not(.reading):not(.writing){
     border-color:#d9dee7;
     background:rgba(255,255,255,.84);
     box-shadow:none;
   }
 
-  .knob-card.selected:not(.reading):hover{
+  .knob-card.selected:not(.reading):not(.writing):hover{
     transform:translateY(-1px);
     box-shadow:0 8px 18px rgba(15,23,42,.08);
     background:rgba(255,255,255,.95);
@@ -921,11 +921,13 @@
     box-shadow:0 4px 10px rgba(15,23,42,.055);
   }
 
-  .knob-card.reading{
+  .knob-card.reading,
+  .knob-card.writing{
     border-color:var(--primary);
     background:linear-gradient(180deg, #f7fbff 0%, var(--primary-soft) 100%);
-    box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    box-shadow:0 0 0 3px rgba(37,99,235,.14);
   }
+
 
   .knob-card{
     display:flex;
@@ -1110,6 +1112,7 @@
   "use strict";
 
   const WRITE_DELAY_MS = 25;
+  const WRITE_HIGHLIGHT_HOLD_MS = 120;
   const SEND_RESET_MARKERS = true;
   const SEND_PREAMBLE = true;
   let toastTimer = null;
@@ -1141,6 +1144,7 @@
     readMode: null,
     readCooldownUntil: 0,
     isWriting: false,
+    writingIndex: null,
     midiReadout: "Waiting for MIDI",
     consoleLines: [],
     knobs: visualLayout.map((item, index) => ({
@@ -1578,7 +1582,11 @@
     state.knobs.forEach((knob, index) => {
       const card = document.createElement("div");
       const isReading = state.readMode && state.readMode.index === index;
-      card.className = "knob-card" + (index === state.selectedIndex ? " selected" : "") + (isReading ? " reading" : "");
+      const isWritingCard = state.writingIndex === index;
+      card.className = "knob-card"
+        + (index === state.selectedIndex ? " selected" : "")
+        + (isReading ? " reading" : "")
+        + (isWritingCard ? " writing" : "");
       card.style.gridColumn = String(knob.col);
       card.style.gridRow = String(knob.row);
       card.dataset.index = String(index);
@@ -1774,17 +1782,20 @@
     try {
       state.isWriting = true;
       state.selectedIndex = index;
+      state.writingIndex = index;
       renderAll();
       updateReadStatus();
 
       await writeKnob(index);
       showToast(`Knob ${state.knobs[index].label} written.`);
       log(`Write ${state.knobs[index].label}: ${shortWriteLabel(state.knobs[index])}`);
+      await wait(WRITE_HIGHLIGHT_HOLD_MS);
     } catch (error) {
       showToast(error.message || String(error));
       log(`ERROR: ${error.message || String(error)}`);
     } finally {
       state.isWriting = false;
+      state.writingIndex = null;
       renderAll();
       updateReadStatus();
     }
@@ -1812,10 +1823,11 @@
 
       for (let i = 0; i < state.knobs.length; i += 1) {
         state.selectedIndex = i;
+        state.writingIndex = i;
         renderAll();
         await writeKnob(i);
         log(`Write ${state.knobs[i].label}: ${shortWriteLabel(state.knobs[i])}`);
-        await wait(40);
+        await wait(WRITE_HIGHLIGHT_HOLD_MS);
       }
       log("Write all: done");
       showToast("All 15 knobs written.");
@@ -1824,6 +1836,7 @@
       log(`ERROR: ${error.message || String(error)}`);
     } finally {
       state.isWriting = false;
+      state.writingIndex = null;
       renderAll();
       updateReadStatus();
     }
