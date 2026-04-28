@@ -649,138 +649,6 @@
     transform:translateX(-50%) translateY(0);
   }
 
-  @media (max-width: 1080px){
-    .workbench{
-      grid-template-columns:minmax(0, 1fr) minmax(260px, 300px);
-      gap:9px;
-      align-items:stretch;
-    }
-
-    .inspector-panel{
-      position:sticky;
-      grid-template-columns:1fr;
-      padding:clamp(8px, 1.45vh, 11px);
-      gap:clamp(6px, 1.2vh, 10px);
-      max-height:100%;
-    }
-
-    .read-strip,
-    .midi-readout-panel,
-    .log-panel{
-      grid-column:auto;
-    }
-
-    .board{
-      grid-template-rows:repeat(5, minmax(0, 1fr));
-      padding:17px;
-      gap:4px;
-      border-radius:20px;
-    }
-
-    .knob-card{
-      grid-template-columns:minmax(0, 1fr);
-      padding:4px;
-      padding-top:38px;
-      column-gap:5px;
-      min-height:0;
-    }
-
-    .knob-face{
-      width:34px;
-      height:34px;
-    }
-
-    .knob-face::before{
-      font-size:.88rem;
-    }
-
-    .knob-fields{
-      gap:4px;
-    }
-
-    .knob-field select,
-    .knob-field input{
-      height:24px;
-      padding:2px 3px;
-      font-size:.78rem;
-    }
-
-  }
-
-  @media (max-width: 760px){
-    .app{
-      padding:8px;
-    }
-
-    .workbench{
-      grid-template-columns:minmax(0, 1fr) minmax(235px, 275px);
-      gap:8px;
-      align-items:stretch;
-    }
-
-    .inspector-panel{
-      padding:clamp(8px, 1.35vh, 10px);
-      gap:clamp(6px, 1.1vh, 9px);
-      grid-template-rows:auto auto auto auto minmax(0, 1fr);
-    }
-
-    .action-row,
-    .command-grid{
-      gap:6px;
-    }
-
-    button,
-    .file-button{
-      padding:.46rem .62rem;
-      font-size:.92rem;
-    }
-
-    .inspector-panel button,
-    .inspector-panel .file-button{
-      padding:clamp(.34rem, 1vh, .46rem) .62rem;
-    }
-
-    .board{
-      grid-template-rows:repeat(5, minmax(0, 1fr));
-      padding:16px;
-      gap:4px;
-      border-radius:18px;
-    }
-
-    .knob-card{
-      grid-template-columns:minmax(0, 1fr);
-      padding:4px;
-      padding-top:36px;
-      column-gap:4px;
-      min-height:0;
-    }
-
-    .knob-face{
-      width:32px;
-      height:32px;
-    }
-
-    .knob-face::before{
-      font-size:.82rem;
-    }
-
-    .knob-fields{
-      gap:5px;
-    }
-
-    .knob-field label{
-      font-size:.56rem;
-    }
-
-    .knob-field select,
-    .knob-field input{
-      height:24px;
-      font-size:.72rem;
-      padding:2px 3px;
-    }
-
-  }
-
   @media (max-width: 900px){
     .app{
       height:auto;
@@ -821,22 +689,6 @@
   }
 
   @media (max-width: 620px){
-    .app{
-      height:auto;
-      min-height:100vh;
-      overflow:visible;
-    }
-
-    .layout{
-      overflow:visible;
-    }
-
-    .workbench{
-      grid-template-columns:1fr;
-      align-items:start;
-      height:auto;
-    }
-
     .device-panel{
       height:auto;
       overflow:visible;
@@ -844,13 +696,6 @@
 
     .board-wrap{
       height:auto;
-    }
-
-    .inspector-panel{
-      position:static;
-      height:auto;
-      max-height:none;
-      overflow:visible;
     }
 
     .board{
@@ -1082,217 +927,6 @@
     box-shadow:0 0 0 3px rgba(37,99,235,.12);
   }
 
-  @media (min-width: 1400px) and (min-height: 780px){
-    .app{
-      width:min(1660px, 100%);
-      padding:24px;
-    }
-
-    .workbench{
-      grid-template-columns:minmax(900px, 1fr) minmax(500px, 540px);
-      gap:18px;
-    }
-
-    .device-panel{
-      padding:18px;
-    }
-
-    .inspector-panel{
-      padding:18px;
-      gap:14px;
-    }
-
-    .board{
-      width:min(1040px, 100%);
-      padding:18px;
-      gap:7px;
-      border-radius:24px;
-    }
-
-    .knob-card{
-      border-radius:17px;
-      padding:clamp(7px, 1vh, 10px);
-      row-gap:clamp(5px, .8vh, 8px);
-    }
-
-    .knob-toprow{
-      column-gap:10px;
-    }
-
-    .knob-toprow > button{
-      min-width:58px;
-      max-width:68px;
-      min-height:30px;
-      padding:3px 8px;
-      font-size:.92rem;
-      border-radius:14px;
-    }
-
-    .knob-toprow .knob-face{
-      width:54px;
-      height:54px;
-    }
-
-    .knob-face::before{
-      font-size:1.14rem;
-    }
-
-    .knob-face::after{
-      width:4px;
-      height:8px;
-      top:4px;
-    }
-
-    .knob-fields{
-      gap:8px;
-    }
-
-    .knob-field{
-      gap:4px;
-    }
-
-    .knob-field label{
-      font-size:.74rem;
-    }
-
-    .knob-field select,
-    .knob-field input{
-      height:35px;
-      border-radius:13px;
-      font-size:1rem;
-      padding:3px 6px;
-    }
-
-    .status-pill{
-      width:36px;
-      height:36px;
-    }
-
-    .dot{
-      width:.74rem;
-      height:.74rem;
-    }
-
-    .midi-status-row{
-      grid-template-columns:36px minmax(0, 1fr) auto;
-      gap:10px;
-    }
-
-    .compact-btn{
-      min-height:36px;
-      padding:.44rem .62rem;
-      font-size:.92rem;
-    }
-
-    .midi-connect{
-      gap:12px;
-    }
-
-    .midi-connect-grid{
-      gap:10px;
-    }
-
-    .field.compact label{
-      font-size:.72rem;
-    }
-
-    .midi-connect .field.compact select{
-      height:42px;
-      border-radius:13px;
-      font-size:1rem;
-      padding:.24rem .48rem;
-    }
-
-    .command-grid,
-    .file-actions{
-      gap:12px;
-    }
-
-    .command-grid button,
-    .file-actions button,
-    .file-actions .file-button{
-      min-height:58px;
-      border-radius:22px;
-      font-size:1.18rem;
-      padding:.62rem .9rem;
-    }
-
-    .midi-readout-panel{
-      min-height:70px;
-      border-radius:18px;
-      padding:14px 18px;
-      font-size:1.05rem;
-    }
-
-    .log-panel{
-      border-radius:18px;
-      padding:12px 16px 16px;
-      gap:8px;
-    }
-
-    .log-title{
-      font-size:1rem;
-    }
-
-    .log-head .ghost{
-      font-size:.92rem;
-    }
-
-    .log{
-      border-radius:14px;
-      padding:14px;
-      font-size:.90rem;
-      line-height:1.42;
-    }
-  }
-
-  @media (min-width: 1700px) and (min-height: 900px){
-    .app{
-      width:min(1780px, 100%);
-      padding:28px;
-    }
-
-    .workbench{
-      grid-template-columns:minmax(980px, 1fr) minmax(540px, 580px);
-      gap:20px;
-    }
-
-    .board{
-      width:min(1120px, 100%);
-      padding:20px;
-      gap:8px;
-    }
-
-    .knob-toprow .knob-face{
-      width:58px;
-      height:58px;
-    }
-
-    .knob-toprow > button{
-      min-width:62px;
-      max-width:72px;
-      min-height:32px;
-      font-size:.96rem;
-    }
-
-    .knob-field label{
-      font-size:.78rem;
-    }
-
-    .knob-field select,
-    .knob-field input{
-      height:38px;
-      font-size:1.08rem;
-    }
-
-    .command-grid button,
-    .file-actions button,
-    .file-actions .file-button{
-      min-height:62px;
-      font-size:1.24rem;
-    }
-  }
-
   .knob-card{
     display:flex;
     flex-direction:column;
@@ -1314,21 +948,6 @@
   .knob-fields{
     width:100%;
     align-self:stretch;
-  }
-
-  @media (min-width: 1400px) and (min-height: 780px){
-    .knob-card{
-      justify-content:center;
-      gap:8px;
-    }
-
-  }
-
-  @media (min-width: 1700px) and (min-height: 900px){
-    .knob-card{
-      justify-content:center;
-      gap:9px;
-    }
   }
 
   /*
@@ -1361,7 +980,6 @@
     user-select:text;
   }
 
-
   /* Slightly enlarge console text while keeping each message on one line. */
   .log{
     font-size:clamp(.78rem, 1.58vh, .92rem);
@@ -1372,20 +990,6 @@
     overflow:hidden;
     text-overflow:ellipsis;
   }
-
-  @media (min-width: 1400px) and (min-height: 780px){
-    .log{
-      font-size:1rem;
-    }
-  }
-
-  @media (min-width: 1700px) and (min-height: 900px){
-    .log{
-      font-size:1.05rem;
-    }
-  }
-
-
 
   /* Align Channel / Mode / Number labels and values exactly. */
   .knob-fields{
@@ -1428,35 +1032,6 @@
   .knob-field select{
     appearance:none;
     -webkit-appearance:none;
-  }
-
-  @media (min-width: 1400px) and (min-height: 780px){
-    .knob-field{
-      gap:4px;
-    }
-
-    .knob-field label{
-      font-size:.82rem;
-    }
-
-    .knob-field select,
-    .knob-field input{
-      height:37px;
-      padding:0 6px;
-      font-size:1.18rem;
-    }
-  }
-
-  @media (min-width: 1700px) and (min-height: 900px){
-    .knob-field label{
-      font-size:.86rem;
-    }
-
-    .knob-field select,
-    .knob-field input{
-      height:40px;
-      font-size:1.26rem;
-    }
   }
 
 </style>
