@@ -21,6 +21,7 @@
     --radius:20px;
     --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
     --sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --shadow:0 6px 16px rgba(15,23,42,.045);
   }
 
   *{
@@ -34,6 +35,7 @@
     color:var(--text);
     font-family:var(--sans);
     line-height:1.35;
+    user-select:none;
   }
 
   button,input,select{
@@ -69,6 +71,7 @@
     background:var(--primary);
     border-color:var(--primary);
     color:#fff;
+    box-shadow:none;
   }
 
   button.primary:hover{
@@ -136,7 +139,6 @@
     border-radius:999px;
     background:#fff;
     border:1px solid var(--line);
-    box-shadow:0 4px 14px rgba(15,23,42,.05);
   }
 
   .status-text{
@@ -305,7 +307,6 @@
     background:rgba(255,255,255,.95);
     border:1px solid var(--line);
     border-radius:var(--radius);
-    box-shadow:var(--shadow);
     min-height:0;
   }
 
@@ -355,6 +356,7 @@
     grid-template-rows:repeat(5, minmax(0, 1fr));
     gap:5px;
     position:relative;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 6px 16px rgba(15,23,42,.045);
   }
 
   .screw{
@@ -406,27 +408,69 @@
     border:1px solid #d9dee7;
     background:rgba(255,255,255,.84);
     border-radius:15px;
-    padding-top:clamp(37px, 6.4vh, 48px);
+    padding:clamp(4px, .85vh, 7px);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:stretch;
+    gap:clamp(5px, .8vh, 8px);
     transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
   }
 
   .knob-card:hover{
     transform:translateY(-1px);
     background:rgba(255,255,255,.95);
+    box-shadow:0 4px 10px rgba(15,23,42,.055);
   }
 
-  .knob-card.selected{
+  .knob-card.reading,
+  .knob-card.writing{
     border-color:var(--primary);
     background:linear-gradient(180deg, #f7fbff 0%, var(--primary-soft) 100%);
-    box-shadow:0 0 0 4px rgba(37,99,235,.10), 0 10px 20px rgba(15,23,42,.10);
+    box-shadow:0 0 0 3px rgba(37,99,235,.14);
+  }
+
+  .knob-toprow{
+    flex:0 0 auto;
+    width:100%;
+    margin:0;
+    grid-column:1;
+    grid-row:2;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    align-items:center;
+    justify-items:center;
+    column-gap:clamp(4px, .7vh, 6px);
+    min-width:0;
+  }
+
+  .knob-toprow > button{
+    width:auto;
+    justify-self:center;
+    white-space:nowrap;
+    min-width:clamp(42px, 6.3vh, 53px);
+    max-width:58px;
+    min-height:clamp(20px, 3.25vh, 25px);
+    padding:3px 7px;
+    font-size:clamp(.73rem, 1.45vh, .80rem);
   }
 
   .knob-face{
+    position:relative;
+    width:clamp(32px, 6.2vh, 44px);
+    height:clamp(32px, 6.2vh, 44px);
     border-radius:999px;
     background:radial-gradient(circle at 50% 50%, #262626 0 51%, transparent 52%),
       conic-gradient(transparent 0deg 24deg, var(--orange) 24deg 336deg, transparent 336deg 360deg),
       radial-gradient(circle at 50% 50%, #374151 0 62%, #111827 63% 72%, #030712 73% 100%);
     box-shadow:3px 4px 6px rgba(15,23,42,.18), inset 0 0 0 3px #2f333a;
+  }
+
+  .knob-toprow .knob-face{
+    grid-column:2;
+    justify-self:center;
+    align-self:center;
+    z-index:1;
   }
 
   .knob-face::before{
@@ -440,6 +484,7 @@
     place-items:center;
     color:#fff;
     font-family:var(--mono);
+    font-size:clamp(.88rem, 1.95vh, 1.08rem);
     font-weight:950;
     font-variant-numeric:tabular-nums;
     line-height:1;
@@ -462,39 +507,57 @@
   }
 
   .knob-fields{
+    flex:0 0 auto;
+    width:100%;
+    align-self:stretch;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    align-items:end;
+    gap:clamp(4px, .75vh, 6px);
     min-width:0;
   }
 
   .knob-field{
     display:grid;
-    gap:2px;
+    grid-template-rows:1em auto;
+    align-items:end;
+    gap:3px;
+    min-width:0;
   }
 
   .knob-field label{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:1em;
     color:var(--muted);
+    font-size:clamp(.62rem, 1.22vh, .68rem);
     font-weight:900;
     letter-spacing:.02em;
     line-height:1;
     text-align:center;
+    white-space:nowrap;
   }
 
   .knob-field select,
   .knob-field input{
-    height:clamp(19px, 3.35vh, 26px);
+    display:block;
+    width:100%;
+    height:clamp(22px, 3.65vh, 28px);
     border-radius:9px;
-    padding:2px 4px;
+    padding:0 4px;
+    font-family:var(--mono);
+    font-size:clamp(.92rem, 1.85vh, 1.04rem);
     font-weight:850;
+    line-height:1;
+    text-align:center;
+    text-align-last:center;
+    box-sizing:border-box;
   }
 
   .knob-field select{
     appearance:none;
-    text-align:center;
-    text-align-last:center;
-  }
-
-  .knob-field input{
-    font-family:var(--mono);
-    text-align:center;
+    -webkit-appearance:none;
   }
 
   .control-section{
@@ -596,7 +659,7 @@
     border-radius:12px;
     padding:clamp(9px, 1.35vh, 12px);
     font-family:var(--mono);
-    font-size:clamp(.70rem, 1.45vh, .82rem);
+    font-size:clamp(.78rem, 1.58vh, .92rem);
     line-height:1.35;
     white-space:normal;
     min-width:0;
@@ -745,212 +808,13 @@
     }
 
     .board{
-      grid-template-rows:none;
       gap:6px;
       padding:16px;
     }
 
-    .knob-card{
-      grid-template-columns:minmax(0, 1fr);
-      padding:5px;
-      padding-top:38px;
-      column-gap:4px;
-      min-height:120px;
-    }
-
-    .knob-face{
-      width:34px;
-      height:34px;
-    }
-
-    .knob-face::before{
-      font-size:.88rem;
-    }
-
-    .action-row,
-    .command-grid{
-      grid-template-columns:1fr 1fr;
-    }
-  }
-
-  .knob-face::before{
-    font-size:clamp(.88rem, 1.95vh, 1.08rem);
-  }
-
-  .knob-field label{
-    font-size:clamp(.56rem, 1.1vh, .60rem);
-  }
-
-  .knob-field select,
-  .knob-field input{
-    font-size:clamp(.78rem, 1.55vh, .86rem);
-  }
-
-  .knob-face{
-    position:relative;
-    left:auto;
-    top:auto;
-    transform:none;
-    width:clamp(32px, 6.2vh, 44px);
-    height:clamp(32px, 6.2vh, 44px);
-  }
-
-  .knob-card{
-    column-gap:clamp(6px, 1vh, 9px);
-  }
-
-  .knob-face{
-    grid-column:2;
-    grid-row:1;
-    justify-self:center;
-    align-self:center;
-    z-index:1;
-  }
-
-  .knob-toprow > button:first-child{
-    justify-self:end;
-  }
-
-  .knob-toprow > button:last-child{
-    justify-self:start;
-  }
-
-  .knob-toprow .knob-face{
-    position:relative;
-    left:auto;
-    top:auto;
-    transform:none;
-    z-index:1;
-  }
-
-  .knob-field{
-    min-width:0;
-  }
-
-  .knob-field select,
-  .knob-field input{
-    width:100%;
-  }
-
-  .knob-card{
-    grid-template-columns:1fr;
-    grid-template-rows:auto auto minmax(0, 1fr);
-    row-gap:clamp(3px, .65vh, 5px);
-    padding:clamp(4px, .85vh, 7px);
-  }
-
-  .knob-toprow{
-    grid-column:1;
-    grid-row:2;
-    display:grid;
-    grid-template-columns:repeat(3, minmax(0, 1fr));
-    align-items:center;
-    justify-items:center;
-    column-gap:clamp(4px, .7vh, 6px);
-    min-width:0;
-  }
-
-  .knob-toprow > button{
-    width:auto;
-    justify-self:center;
-    white-space:nowrap;
-  }
-
-  .knob-toprow .knob-face{
-    grid-column:2;
-    justify-self:center;
-    align-self:center;
-    width:clamp(32px, 6.2vh, 44px);
-    height:clamp(32px, 6.2vh, 44px);
-  }
-
-  .knob-fields{
-    grid-column:1;
-    grid-row:3;
-    display:grid;
-    grid-template-columns:repeat(3, minmax(0, 1fr));
-    gap:clamp(4px, .75vh, 6px);
-  }
-
-  .knob-field:nth-child(3){
-    grid-column:auto;
-  }
-
-  .knob-card.selected:not(.reading):not(.writing){
-    border-color:#d9dee7;
-    background:rgba(255,255,255,.84);
-    box-shadow:none;
-  }
-
-  .knob-card.selected:not(.reading):not(.writing):hover{
-    transform:translateY(-1px);
-    box-shadow:0 8px 18px rgba(15,23,42,.08);
-    background:rgba(255,255,255,.95);
-  }
-
-  .knob-toprow > button{
-    min-width:clamp(42px, 6.3vh, 53px);
-    max-width:58px;
-    min-height:clamp(20px, 3.25vh, 25px);
-    padding:3px 7px;
-    font-size:clamp(.73rem, 1.45vh, .80rem);
-  }
-
-  :root{
-    --shadow:0 6px 16px rgba(15,23,42,.045);
-  }
-
-  button.primary{
-    box-shadow:none;
-  }
-
-  .panel,
-  .board,
-  .knob-card,
-  .status-pill,
-  .midi-connect-grid,
-  .midi-readout-panel{
-    box-shadow:none;
-  }
-
-  .board{
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 6px 16px rgba(15,23,42,.045);
-  }
-
-  .knob-card:hover{
-    box-shadow:0 4px 10px rgba(15,23,42,.055);
-  }
-
-  .knob-card.reading,
-  .knob-card.writing{
-    border-color:var(--primary);
-    background:linear-gradient(180deg, #f7fbff 0%, var(--primary-soft) 100%);
-    box-shadow:0 0 0 3px rgba(37,99,235,.14);
   }
 
 
-  .knob-card{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:stretch;
-    gap:clamp(5px, .8vh, 8px);
-  }
-
-  .knob-toprow,
-  .knob-fields{
-    flex:0 0 auto;
-  }
-
-  .knob-toprow{
-    width:100%;
-    margin:0;
-  }
-
-  .knob-fields{
-    width:100%;
-    align-self:stretch;
-  }
 
   /*
     Limit visible insertion carets to intentional text areas:
@@ -960,9 +824,6 @@
     caret-color:transparent;
   }
 
-  body{
-    user-select:none;
-  }
 
   input, select, button, .file-button{
     caret-color:transparent;
@@ -982,59 +843,7 @@
     user-select:text;
   }
 
-  /* Slightly enlarge console text while keeping each message on one line. */
-  .log{
-    font-size:clamp(.78rem, 1.58vh, .92rem);
-  }
 
-  .console-message{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  /* Align Channel / Mode / Number labels and values exactly. */
-  .knob-fields{
-    align-items:end;
-  }
-
-  .knob-field{
-    display:grid;
-    grid-template-rows:1em auto;
-    align-items:end;
-    gap:3px;
-    min-width:0;
-  }
-
-  .knob-field label{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    height:1em;
-    font-size:clamp(.62rem, 1.22vh, .68rem);
-    line-height:1;
-    white-space:nowrap;
-  }
-
-  .knob-field select,
-  .knob-field input{
-    display:block;
-    width:100%;
-    height:clamp(22px, 3.65vh, 28px);
-    padding:0 4px;
-    font-family:var(--mono);
-    font-size:clamp(.92rem, 1.85vh, 1.04rem);
-    font-weight:850;
-    line-height:1;
-    text-align:center;
-    text-align-last:center;
-    box-sizing:border-box;
-  }
-
-  .knob-field select{
-    appearance:none;
-    -webkit-appearance:none;
-  }
 
 </style>
 </head>
